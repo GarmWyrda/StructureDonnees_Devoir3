@@ -1,9 +1,7 @@
 #pragma once
-#include <memory>
 #include <vector>
-using std::shared_ptr;
+#include "Edge.h"
 using std::vector;
-class Edge;
 
 class State
 {

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "State.h"
-#include "Edge.h"		//Needed for addTransition, may cause issue in the futur : circle inclusion ?
 
 State::State()
 {
