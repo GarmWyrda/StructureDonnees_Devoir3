@@ -51,4 +51,36 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="exemple11comment.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="exemple11limitecomment.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test8.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test8_limite.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test10.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test10_limite.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test11.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test11limite.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test23.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test23_limite.afdC">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -163,6 +163,18 @@
     </ClCompile>
     <ClCompile Include="StructureDonnees_Devoir3.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="exemple11comment.afdC" />
+    <None Include="exemple11limitecomment.afdC" />
+    <None Include="test10.afdC" />
+    <None Include="test10_limite.afdC" />
+    <None Include="test11.afdC" />
+    <None Include="test11limite.afdC" />
+    <None Include="test23.afdC" />
+    <None Include="test23_limite.afdC" />
+    <None Include="test8.afdC" />
+    <None Include="test8_limite.afdC" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
