@@ -7,11 +7,14 @@ class AFDGraph
 {
 private :
 	vector<State> states;
-	State initState;
+	int idStartState;
 public:
 	AFDGraph();
-	~AFDGraph();
-	State getInitState();
+	virtual ~AFDGraph();
+	void addNewState(int id, bool final, bool start);
+	const State &getState(int index) const;
+	State &getState(int id);
+	const State &getState(const State &state) const;
 
 };
 

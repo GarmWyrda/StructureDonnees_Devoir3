@@ -1,16 +1,21 @@
 #include "stdafx.h"
 #include "Edge.h"
+#include "State.h"
 
 
-Edge::Edge()
-{
-}
 
-Edge::Edge(shared_ptr<State> arrivalState, char transition, int weight)
+Edge::Edge(State* arrivalState, string transition, int weight) : arrivalState(arrivalState)
 {
 	this->arrivalState = arrivalState;
 	this->transition = transition;
 	this->weight = weight;
+}
+
+Edge::Edge(const Edge & edge) : arrivalState(arrivalState)
+{
+	this->arrivalState = edge.getArrivalState();
+	this->transition = edge.getTransition();
+	this->weight = edge.getWeight();
 }
 
 
@@ -18,22 +23,18 @@ Edge::~Edge()
 {
 }
 
-shared_ptr<State> Edge::getArrivalState()
+State* Edge::getArrivalState() const
 {
 	return this->arrivalState;
 }
 
-void Edge::setArrivalState(shared_ptr<State> newState)
-{
-	this->arrivalState = newState;
-}
-
-char Edge::getTransition()
+string Edge::getTransition() const
 {
 	return this->transition;
 }
 
-void Edge::setTransition(char newTransition)
+
+int Edge::getWeight() const
 {
-	this->transition = newTransition;
+	return this->weight;
 }
