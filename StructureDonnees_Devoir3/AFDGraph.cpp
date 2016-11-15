@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "AFDGraph.h"
+#include <iostream>
+
+using namespace std;
 
 
 AFDGraph::AFDGraph()
@@ -27,11 +30,6 @@ void AFDGraph::addNewState(int id, bool isfinal, bool start)
 	}
 }
 
-const State & AFDGraph::getState(int i) const
-{
-	return this->states[i];
-}
-
 State & AFDGraph::getState(int id)
 {
 	vector<State>::iterator it;
@@ -43,13 +41,31 @@ State & AFDGraph::getState(int id)
 	return *it;
 }
 
-const State & AFDGraph::getState(const State & state) const
+State & AFDGraph::getStartState()
 {
-	vector<State>::const_iterator it;
-	for (it = this->states.cbegin(); it != this->states.cend(); ++it) {
+	vector<State>::iterator it;
+	for (it = this->states.begin(); it != this->states.end(); ++it) {
+		if (it->getId() == this->idStartState) {
+			return *it;
+		}
+	}
+	std::cout << "getStartState() not found" << std::endl;
+	return State();
+}
+
+State & AFDGraph::getState(const State & state)
+{
+	vector<State>::iterator it;
+	for (it = this->states.begin(); it != this->states.end(); ++it) {
 		if (*it == state) {
 			break;
 		}
 	}
-	return *it;
+	std::cout << "getState(const State & state) not found" << std::endl;
+	return State();
+}
+
+const vector<State>& AFDGraph::getStates() const
+{
+	return this->states;
 }

@@ -33,6 +33,9 @@
     <ClInclude Include="AFDGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LayerGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AFDGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

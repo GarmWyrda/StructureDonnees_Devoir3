@@ -11,6 +11,7 @@ private :
 	vector<Edge> transitions;
 
 public:
+	State();
 	State(int id, bool isfinal, vector<Edge> transitions);
 	State(int id, bool isfinal);
 	virtual ~State();

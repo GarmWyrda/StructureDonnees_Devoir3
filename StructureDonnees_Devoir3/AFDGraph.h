@@ -13,9 +13,10 @@ public:
 	virtual ~AFDGraph();
 	void setStartState(int idStartState);
 	void addNewState(int id, bool isfinal, bool start);
-	const State &getState(int index) const;
-	State &getState(int id);
-	const State &getState(const State &state) const;
+	State &getState(int index);
+	State &getStartState();
+	State &getState(const State &state);
+	const vector<State> &getStates() const;
 
 };
 
