@@ -5,7 +5,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 {
 	//Source
 	vector<Edge> edges = vector<Edge>();
-	Edge edge = Edge(&graph.getStartState(), "", 0);
+	Edge edge = Edge(make_shared<State>(graph.getStartState()), "", 0);
 	edges.push_back(edge);
 	this->source = State(-1, false, edges);
 
@@ -50,7 +50,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 
 	for (State state : this->layers[this->layers.size() - 1]) {
 		if (state.getFinal()) {
-			Edge newEdge = Edge(&this->destination, "", 0);
+			Edge newEdge = Edge(make_shared<State>(this->destination), "", 0);
 			state.addTransition(newEdge);
 		}
 	}
@@ -64,7 +64,7 @@ LayerGraph::~LayerGraph()
 vector<State> LayerGraph::findShortestPath()
 {
 	bool goalReached = _propagateStates(source, destination);
-	if (goalReached)
+	//if (goalReached)
 		//return buildOptimalPath(source, destination);
 }
 
@@ -72,15 +72,16 @@ vector<State> LayerGraph::findShortestPath()
 bool LayerGraph::_propagateStates(State startState, State goalState)
 {
 	vector<State> heap = vector<State>();
-
+	int trialCost = 0;
 	State currentState = startState;
 
 	do {
-		vector<shared_ptr<State>> neighbors = vector<shared_ptr<State>>();
+		currentState.setClosed(true);
 		for (Edge transition : currentState.getTransitions())
 		{
-			neighbors.push_back(transition.getArrivalState());
+			//trialCost = 
 		}
+
 	} while (true);
 	
 	return false;

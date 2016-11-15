@@ -40,7 +40,7 @@ void State::setFinal(bool newFinal)
 	this->isfinal = newFinal;
 }
 
-int State::getNbTransitions()
+size_t State::getNbTransitions()
 {
 	return this->transitions.size();
 }

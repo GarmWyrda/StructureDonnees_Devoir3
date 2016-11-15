@@ -19,11 +19,11 @@ public:
 	int getId() const;
 	bool getFinal();
 	void setFinal(bool newFinal);
-	int getNbTransitions();
+	size_t getNbTransitions();
 	vector<Edge> getTransitions();
 	Edge getEdge(int i);
 	void addTransition(Edge newEdge);
-	void addTransition(State* outState, string transition, int weight);
+	void addTransition(shared_ptr<State> outState, string transition, int weight);
 	void setClosed(bool isClosed);
 	bool isClosed();
 };
