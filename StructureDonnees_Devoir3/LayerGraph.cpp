@@ -28,7 +28,20 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 		for (State state : this->layers[i - 1]) {
 			State stateInAFDGraph = graph.getState(state.getId());
 			for (Edge edge : stateInAFDGraph.getTransitions()) {
-				state.addTransition(edge.getArrivalState(), edge.getTransition(), edge.getWeight());
+				int idArrivalState = edge.getArrivalState()->getId();
+				bool find = false;
+				State arrivalState = State();
+				while (!find) {
+					vector<State>::iterator it;
+					for (it = this->layers[i].begin(); it != this->layers[i].end(); ++it) {
+						if (it->getId() == idArrivalState) {
+							break;
+						}
+					}
+					 arrivalState = *it;
+					 find = true;
+				}
+				state.addTransition(&arrivalState, edge.getTransition(), edge.getWeight());
 			}
 		}
 	}
