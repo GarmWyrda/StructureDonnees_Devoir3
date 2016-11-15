@@ -8,6 +8,9 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include "State.h"
+#include <algorithm>
+#include "AFDGraph.h"
 using namespace std;
 
 
@@ -22,18 +25,18 @@ vector<string> split(const string &s, char delim) {
 	return result;
 }
 
-bool readTransitionFile(string fileName)
+AFDGraph buildGraphTransitionFile(string fileName)
 {
 	ifstream infile(fileName);
 	int alphabetSize;
 	int nbStates;
-	string initialState;
+	int initialState;
 	int nbFinalStates;
 	vector<string> finalStates = vector<string>();
 	int nbTransition;
 	string line;
 
-	vector<vector<string>> transition = vector<vector<string>>();
+	vector<vector<string>> transitionLines = vector<vector<string>>();
 
 	getline(infile, line);
 	alphabetSize = stoi(line);
@@ -55,10 +58,38 @@ bool readTransitionFile(string fileName)
 	while (infile && numTransition < nbTransition)
 	{
 		if (!getline(infile, line)) break;
-		transition.push_back(split(line, ' '));
+		transitionLines.push_back(split(line, ' '));
 		numTransition++;
 	}
-	return true;
+	
+	vector<State> states = vector<State>();
+	for(int i = 1; i <= nbStates; i++)
+	{
+
+		if (find(finalStates.begin(), finalStates.end(), to_string(i)) != finalStates.end())
+			states.push_back(State(i, true));
+		else
+			states.push_back(State(i, false));
+	}
+
+	for (int i = 0; i < nbTransition; i++)
+	{
+		vector<State>::iterator itArrivalState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][2]);});
+		Edge transition = Edge(&(*itArrivalState), transitionLines[i][3], stoi(transitionLines[i][0]));
+		vector<State>::iterator itStartState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][1]);});
+		itStartState->addTransition(transition);
+	}
+
+	AFDGraph graph = AFDGraph();
+	for(State state : states)
+	{
+		if(state.getId() == initialState) graph.addState(state, true);
+		else graph.addState(state, false);
+	}
+
+	return graph;
+
+
 }
 
 bool readLimitsFile(string fileName)
@@ -97,7 +128,7 @@ int main()
 	{
 		try
 		{
-			readTransitionFile(transitionFilName);
+			AFDGraph graph = buildGraphTransitionFile(transitionFilName);
 			fileFound = true;
 		} catch(...)
 		{

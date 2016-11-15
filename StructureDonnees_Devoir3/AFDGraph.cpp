@@ -23,7 +23,15 @@ void AFDGraph::addNewState(int id, bool isfinal, bool start)
 	State newState = State(id, isfinal);
 	this->states.push_back(newState);
 	if (start) {
-		this->idStartState = this->states.size() - 1;
+		this->idStartState = id;
+	}
+}
+
+void AFDGraph::addState(State state, bool start)
+{
+	this->states.push_back(state);
+	if (start) {
+		this->idStartState = state.getId();
 	}
 }
 
