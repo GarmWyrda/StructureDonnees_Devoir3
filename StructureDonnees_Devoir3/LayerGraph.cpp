@@ -39,6 +39,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 	for (State state : this->layers[this->layers.size() - 1]) {
 		if (state.getFinal()) {
 			Edge newEdge = Edge(&this->destination, "", 0);
+			state.addTransition(newEdge);
 		}
 	}
 
