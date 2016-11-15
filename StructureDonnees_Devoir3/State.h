@@ -7,12 +7,12 @@ class State
 {
 private :
 	int id;
-	bool final;
+	bool isfinal;
 	vector<Edge> transitions;
 
 public:
-	State(int id, bool final, vector<Edge> transitions);
-	State(int id, bool final);
+	State(int id, bool isfinal, vector<Edge> transitions);
+	State(int id, bool isfinal);
 	virtual ~State();
 	int getId() const;
 	bool getFinal();

@@ -13,9 +13,14 @@ AFDGraph::~AFDGraph()
 {
 }
 
-void AFDGraph::addNewState(int id, bool final, bool start)
+void AFDGraph::setStartState(int idStartState)
 {
-	State newState = State(id, final);
+	this->idStartState = idStartState;
+}
+
+void AFDGraph::addNewState(int id, bool isfinal, bool start)
+{
+	State newState = State(id, isfinal);
 	this->states.push_back(newState);
 	if (start) {
 		this->idStartState = this->states.size() - 1;

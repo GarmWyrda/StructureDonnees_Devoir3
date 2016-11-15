@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "State.h"
 
-State::State(int id, bool final, vector<Edge> transitions)
+State::State(int id, bool isfinal, vector<Edge> transitions)
 {
-	this->final = final;
+	this->isfinal = isfinal;
 	this->id = id;
 	this->transitions = transitions;
 }
 
-State::State(int id, bool final)
+State::State(int id, bool isfinal)
 {
 	this->id = id;
-	this->final = final;
+	this->isfinal = isfinal;
 	this->transitions = vector<Edge>();
 }
 
@@ -28,12 +28,12 @@ int State::getId() const
 
 bool State::getFinal()
 {
-	return this->final;
+	return this->isfinal;
 }
 
 void State::setFinal(bool newFinal)
 {
-	this->final = newFinal;
+	this->isfinal = newFinal;
 }
 
 int State::getNbTransitions()

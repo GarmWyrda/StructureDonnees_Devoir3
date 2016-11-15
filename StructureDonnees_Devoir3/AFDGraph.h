@@ -11,7 +11,8 @@ private :
 public:
 	AFDGraph();
 	virtual ~AFDGraph();
-	void addNewState(int id, bool final, bool start);
+	void setStartState(int idStartState);
+	void addNewState(int id, bool isfinal, bool start);
 	const State &getState(int index) const;
 	State &getState(int id);
 	const State &getState(const State &state) const;
