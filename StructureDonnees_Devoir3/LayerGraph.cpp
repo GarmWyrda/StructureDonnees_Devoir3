@@ -40,7 +40,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 					 arrivalState = *it;
 					 find = true;
 				}
-				state.addTransition(&arrivalState, edge.getTransition(), edge.getWeight());
+				state.addTransition(make_shared<State>(arrivalState), edge.getTransition(), edge.getWeight());
 			}
 		}
 	}
