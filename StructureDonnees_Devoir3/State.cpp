@@ -60,10 +60,20 @@ void State::addTransition(Edge newEdge)
 	this->transitions.push_back(newEdge);
 }
 
-void State::addTransition(State * outState, string transition, int weight)
+void State::setClosed(bool isClosed)
+{
+	this->closed = isClosed;
+}
+
+void State::addTransition(shared_ptr<State> outState, string transition, int weight)
 {
 	Edge newEdge = Edge(outState, transition, weight);
 	this->transitions.push_back(newEdge);
+}
+
+bool State::isClosed()
+{
+	return this->closed;
 }
 
 bool const operator==(State const & state, State const & otherState)
