@@ -31,18 +31,16 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 				state.addTransition(edge.getArrivalState(), edge.getTransition(), edge.getWeight());
 			}
 		}
-
-		this->destination = State(-2, true);
-
-		for (State state : this->layers[this->layers.size() - 1]) {
-			if (state.getFinal()) {
-				Edge newEdge = Edge(&this->destination, "", 0);
-			}
-		}
-
 	}
 
 	//Destination
+	this->destination = State(-2, true);
+
+	for (State state : this->layers[this->layers.size() - 1]) {
+		if (state.getFinal()) {
+			Edge newEdge = Edge(&this->destination, "", 0);
+		}
+	}
 
 }
 
