@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "LayerGraph.h"
 
-
 LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 {
 	//Source
@@ -60,4 +59,29 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 
 LayerGraph::~LayerGraph()
 {
+}
+
+vector<State> LayerGraph::findShortestPath()
+{
+	bool goalReached = _propagateStates(source, destination);
+	if (goalReached)
+		//return buildOptimalPath(source, destination);
+}
+
+
+bool LayerGraph::_propagateStates(State startState, State goalState)
+{
+	vector<State> heap = vector<State>();
+
+	State currentState = startState;
+
+	do {
+		vector<shared_ptr<State>> neighbors = vector<shared_ptr<State>>();
+		for (Edge transition : currentState.getTransitions())
+		{
+			neighbors.push_back(transition.getArrivalState());
+		}
+	} while (true);
+	
+	return false;
 }

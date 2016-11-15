@@ -9,6 +9,7 @@ private :
 	int id;
 	bool isfinal;
 	vector<Edge> transitions;
+	bool closed = false;
 
 public:
 	State();
@@ -23,6 +24,8 @@ public:
 	Edge getEdge(int i);
 	void addTransition(Edge newEdge);
 	void addTransition(State* outState, string transition, int weight);
+	void setClosed(bool isClosed);
+	bool isClosed();
 };
 
 bool const operator==(State const &state, State const &otherState);

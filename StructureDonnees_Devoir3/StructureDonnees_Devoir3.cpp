@@ -75,7 +75,7 @@ AFDGraph buildGraphTransitionFile(string fileName)
 	for (int i = 0; i < nbTransition; i++)
 	{
 		vector<State>::iterator itArrivalState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][2]);});
-		Edge transition = Edge(&(*itArrivalState), transitionLines[i][3], stoi(transitionLines[i][0]));
+		Edge transition = Edge(make_shared<State>(*itArrivalState), transitionLines[i][3], stoi(transitionLines[i][0]));
 		vector<State>::iterator itStartState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][1]);});
 		itStartState->addTransition(transition);
 	}

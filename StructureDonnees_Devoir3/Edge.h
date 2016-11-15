@@ -1,19 +1,20 @@
 #pragma once
 #include <string>
-using std::string;
+#include <memory>
+using namespace std;
 class State;
 
 class Edge
 {
 private :
-	State* arrivalState;
+	shared_ptr<State> arrivalState;
 	string transition;
 	int weight;
 public:
-	Edge(State* arrivalState, string transition, int weight);
+	Edge(shared_ptr<State> arrivalState, string transition, int weight);
 	Edge(const Edge &edge);
 	virtual ~Edge();
-	State* getArrivalState() const;
+	shared_ptr<State> getArrivalState() const;
 	string getTransition() const;
 	int getWeight() const;
 };
