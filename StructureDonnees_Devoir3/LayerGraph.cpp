@@ -80,13 +80,13 @@ LayerGraph::~LayerGraph()
 
 vector<State> LayerGraph::findShortestPath()
 {
-	bool goalReached = _propagateStates(source, destination);
+	bool goalReached = _propagateStates(source, destination, 0);
 	//if (goalReached)
 		//return buildOptimalPath(source, destination);
 }
 
 
-bool LayerGraph::_propagateStates(State startState, State goalState)
+bool LayerGraph::_propagateStates(State startState, State goalState, int sumCost)
 {
 	vector<State> heap = vector<State>();
 	int trialCost = 0;
@@ -96,7 +96,11 @@ bool LayerGraph::_propagateStates(State startState, State goalState)
 		currentState.setClosed(true);
 		for (Edge transition : currentState.getTransitions())
 		{
-			//trialCost = 
+			trialCost = sumCost + transition.getWeight();
+			if(!transition.getArrivalState()->isClosed())
+			{
+				
+			}
 		}
 
 	} while (true);

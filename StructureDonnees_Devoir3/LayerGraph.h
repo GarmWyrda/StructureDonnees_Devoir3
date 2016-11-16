@@ -8,7 +8,7 @@ private:
 	State source;
 	State destination;
 	vector<vector<State>> layers;
-	bool _propagateStates(State startNode, State goalNode);
+	bool _propagateStates(State startNode, State goalNode, int sumCost);
 
 public:
 	LayerGraph(AFDGraph graph, int wordLength);
