@@ -134,8 +134,9 @@ bool LayerGraph::_propagateStates(State startState, State goalState, int sumCost
 			}
 		}
 		
-		currentState = heap.back();
 		pop_heap(heap.begin(), heap.end());
+		currentState = heap.back();
+		heap.pop_back();
 		sort_heap(heap.begin(), heap.end());
 	} while (!heap.empty() && currentState != goalState);
 	
