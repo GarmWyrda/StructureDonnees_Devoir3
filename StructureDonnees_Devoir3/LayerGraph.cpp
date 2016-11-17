@@ -78,6 +78,11 @@ LayerGraph::~LayerGraph()
 {
 }
 
+State LayerGraph::getSource() const
+{
+	return this->source;
+}
+
 vector<State> LayerGraph::findShortestPath()
 {
 	bool goalReached = _propagateStates(source, destination, 0);
@@ -106,4 +111,19 @@ bool LayerGraph::_propagateStates(State startState, State goalState, int sumCost
 	} while (true);
 	
 	return false;
+}
+
+std::ostream & operator<<(std::ostream & stream, const LayerGraph layerGraph)
+{
+	Edge edge = layerGraph.getSource().getTransitions()[0];
+	stream << "Source : " << endl;
+	stream << edge.getArrivalState()->getId() << endl;
+
+	stream << "---- Loop from Layer 0 ----" << endl;
+	for (State state : layerGraph.layers[0]) {
+		stream << state << endl;
+		
+	}
+
+
 }

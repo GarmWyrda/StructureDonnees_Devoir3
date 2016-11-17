@@ -21,11 +21,13 @@ public:
 	void setFinal(bool newFinal);
 	size_t getNbTransitions();
 	vector<Edge> getTransitions();
+	vector<Edge> getTransitions() const;
 	Edge getEdge(int i);
 	void addTransition(Edge newEdge);
 	void addTransition(shared_ptr<State> outState, string transition, int weight);
 	void setClosed(bool isClosed);
 	bool isClosed();
+	friend std::ostream& operator<< (std::ostream&, const State);
 };
 
 bool const operator==(State const &state, State const &otherState);

@@ -50,6 +50,11 @@ vector<Edge> State::getTransitions()
 	return this->transitions;
 }
 
+vector<Edge> State::getTransitions() const
+{
+	return this->transitions;
+}
+
 Edge State::getEdge(int i)
 {
 	return this->transitions[i];
@@ -74,6 +79,16 @@ void State::addTransition(shared_ptr<State> outState, string transition, int wei
 bool State::isClosed()
 {
 	return this->closed;
+}
+
+std::ostream & operator<<(std::ostream & stream, const State state)
+{
+	stream << state.getId() << "---> ";
+	stream << " ( ";
+	for (Edge edge : state.getTransitions()) {
+		stream << edge.getArrivalState();
+	}
+	stream << " ) ";
 }
 
 bool const operator==(State const & state, State const & otherState)
