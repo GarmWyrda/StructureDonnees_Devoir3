@@ -38,7 +38,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 		this->layers.push_back(vector<State>());
 		for (State state : graph.getStates()) {
 			State newState = State(state.getId(), state.getFinal());
-			this->layers[0].push_back(newState);
+			this->layers[i].push_back(newState);
 		}
 
 
