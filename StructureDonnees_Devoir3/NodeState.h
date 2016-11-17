@@ -1,6 +1,8 @@
 ﻿#pragma once
-#include "State.h"
+#include <memory>
+using namespace std;
 
+class State;
 class NodeState
 {
 private:

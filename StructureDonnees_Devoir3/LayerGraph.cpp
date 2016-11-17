@@ -126,7 +126,7 @@ bool LayerGraph::_propagateStates(State startState, State goalState, int sumCost
 			{
 				if(!arrivalState->getNodeState()->isClosed() && trialCost < arrivalState->getNodeState()->getCost())
 				{
-					int i = find(heap.begin(), heap.end(), arrivalState) - heap.begin();
+					int i = find(heap.begin(), heap.end(), *arrivalState) - heap.begin();
 					heap[i].getNodeState()->setCost(trialCost);
 					arrivalState->getNodeState()->setPredecessor(make_shared<State>(currentState));
 					arrivalState->getNodeState()->setCost(trialCost);

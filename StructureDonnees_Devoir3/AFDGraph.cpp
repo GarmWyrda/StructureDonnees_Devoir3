@@ -65,7 +65,7 @@ State & AFDGraph::getState(const State & state)
 {
 	vector<State>::iterator it;
 	for (it = this->states.begin(); it != this->states.end(); ++it) {
-		if (*it == state) {
+		if (it->getId() == state.getId()) {
 			break;
 		}
 	}

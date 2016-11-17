@@ -92,6 +92,12 @@ bool State::operator==(const State state) const
 	return this->getNodeState()->getCost() == state.getNodeState()->getCost();
 }
 
+bool State::operator!=(const State state) const
+{
+	return this->getNodeState()->getCost() != state.getNodeState()->getCost();
+}
+
+
 ostream & operator<<(std::ostream & stream, const State state)
 {
 	stream << state.getId() << "---> ";
@@ -101,9 +107,4 @@ ostream & operator<<(std::ostream & stream, const State state)
 	}
 	stream << " ) ";
 	return stream;
-}
-
-bool State::operator!=(const State state) const
-{
-	return this->getNodeState()->getCost() != state.getNodeState()->getCost();
 }
