@@ -103,7 +103,7 @@ ostream & operator<<(std::ostream & stream, const State state)
 	stream << state.getId() << "---> ";
 	stream << " ( ";
 	for (Edge edge : state.getTransitions()) {
-		stream << edge.getArrivalState();
+		stream << *edge.getArrivalState();
 	}
 	stream << " ) ";
 	return stream;

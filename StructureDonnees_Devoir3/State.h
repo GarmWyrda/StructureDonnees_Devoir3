@@ -29,7 +29,7 @@ public:
 	void setNodeState(shared_ptr<NodeState> nodeState);
 	shared_ptr<NodeState> getNodeState() const;
 
-	friend std::ostream& operator<< (std::ostream&, const State state);
+	friend ostream& operator<< (ostream&, const State);
 	bool operator<(const State state) const;
 	bool operator>(const State state) const;
 	bool operator==(const State state) const;
