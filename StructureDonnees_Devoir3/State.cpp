@@ -50,6 +50,11 @@ vector<Edge> State::getTransitions() const
 	return this->transitions;
 }
 
+vector<Edge> State::getTransitions() const
+{
+	return this->transitions;
+}
+
 Edge State::getEdge(int i)
 {
 	return this->transitions[i];
@@ -89,6 +94,16 @@ bool State::operator>(const State state) const
 bool State::operator==(const State state) const
 {
 	return this->getNodeState()->getCost() == state.getNodeState()->getCost();
+}
+
+ostream & operator<<(std::ostream & stream, const State state)
+{
+	stream << state.getId() << "---> ";
+	stream << " ( ";
+	for (Edge edge : state.getTransitions()) {
+		stream << edge.getArrivalState();
+	}
+	stream << " ) ";
 }
 
 bool State::operator!=(const State state) const
