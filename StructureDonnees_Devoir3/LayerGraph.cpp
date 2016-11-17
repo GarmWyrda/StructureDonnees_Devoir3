@@ -17,8 +17,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 	//Create Edge From Source To Start State of AFDGraph (first Layer)
 	vector<Edge> edges = vector<Edge>();
 	int idArrivalFromSource = graph.getStartState().getId();
-	bool find = false;
-	State arrivalState = State();
+	/*
 	while (!find) {
 		vector<State>::iterator it;
 		for (it = this->layers[0].begin(); it != this->layers[0].end(); ++it) {
@@ -29,7 +28,9 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 		arrivalState = *it;
 		find = true;
 	}
-	Edge edge = Edge(make_shared<State>(arrivalState), "", 0);
+	*/
+	int statePos = find_if(this->layers[0].begin(), this->layers[0].end(), [idArrivalFromSource](const State& state) {return state.getId() == idArrivalFromSource; }) - this->layers[0].begin();
+	Edge edge = Edge(make_shared<State>(this->layers[0][statePos]), "", 0);
 	edges.push_back(edge);
 	this->source = State(-1, false, edges);
 
@@ -46,7 +47,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 			State stateInAFDGraph = graph.getState(state.getId());
 			for (Edge edge : stateInAFDGraph.getTransitions()) {
 				int idArrivalState = edge.getArrivalState()->getId();
-				bool find = false;
+				//bool find = false;
 				shared_ptr<State> arrivalState;
 				/*while (!find) {
 					vector<State>::iterator it;

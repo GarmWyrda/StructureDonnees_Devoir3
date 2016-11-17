@@ -2,6 +2,7 @@
 #include "AFDGraph.h"
 #include <iostream>
 #include "NotFoundException.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -41,6 +42,7 @@ void AFDGraph::addState(State state, bool start)
 
 State & AFDGraph::getState(int id)
 {
+	/*
 	vector<State>::iterator it;
 	for (it = this->states.begin(); it != this->states.end(); ++it) {
 		if (it->getId() == id) {
@@ -48,10 +50,14 @@ State & AFDGraph::getState(int id)
 		}
 	}
 	return *it;
+	*/
+	int statePos = find_if(this->states.begin(), this->states.end(), [id](const State& state) {return state.getId() == id; }) - this->states.begin();
+	return this->states[statePos];
 }
 
 State & AFDGraph::getStartState()
 {
+	/*
 	vector<State>::iterator it;
 	for (it = this->states.begin(); it != this->states.end(); ++it) {
 		if (it->getId() == this->idStartState) {
@@ -59,10 +65,15 @@ State & AFDGraph::getStartState()
 		}
 	}
 	throw NotFoundException();
+	*/
+	int idToFind = this->idStartState;
+	int statePos = find_if(this->states.begin(), this->states.end(), [idToFind](const State& state) {return state.getId() == idToFind; }) - this->states.begin();
+	return this->states[statePos];
 }
 
 State & AFDGraph::getState(const State & state)
 {
+	/*
 	vector<State>::iterator it;
 	for (it = this->states.begin(); it != this->states.end(); ++it) {
 		if (it->getId() == state.getId()) {
@@ -70,6 +81,10 @@ State & AFDGraph::getState(const State & state)
 		}
 	}
 	throw NotFoundException();
+	*/
+	int idToFind = state.getId();
+	int statePos = find_if(this->states.begin(), this->states.end(), [idToFind](const State& findState) {return findState.getId() == idToFind; }) - this->states.begin();
+	return this->states[statePos];
 }
 
 const vector<State>& AFDGraph::getStates() const
