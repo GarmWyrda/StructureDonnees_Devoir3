@@ -11,6 +11,7 @@
 #include "State.h"
 #include <algorithm>
 #include "AFDGraph.h"
+#include "LayerGraph.h"
 using namespace std;
 
 
@@ -123,7 +124,7 @@ int main()
 	string transitionFilName;
 	cin >> transitionFilName;
 	bool fileFound = false;
-
+	AFDGraph graph = AFDGraph();
 	while (!fileFound)
 	{
 		try
@@ -164,8 +165,10 @@ int main()
 
 	}
 
+	LayerGraph layergraph = LayerGraph(graph, 3);
+	std::cout << layergraph << std::endl;
 
-		system("pause");
+	system("pause");
 	return 0;
 }
 
