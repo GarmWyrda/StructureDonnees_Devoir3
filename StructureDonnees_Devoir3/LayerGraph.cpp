@@ -43,12 +43,12 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 
 
 		//Create Edges for each layer
-		for (State state : this->layers[i - 1]) {
+		for (State& state : this->layers[i - 1]) {
 			State stateInAFDGraph = graph.getState(state.getId());
 			for (Edge edge : stateInAFDGraph.getTransitions()) {
 				int idArrivalState = edge.getArrivalState()->getId();
 				//bool find = false;
-				shared_ptr<State> arrivalState;
+				//shared_ptr<State> arrivalState;
 				/*while (!find) {
 					vector<State>::iterator it;
 					for (it = this->layers[i].begin(); it != this->layers[i].end(); ++it) {
@@ -60,8 +60,8 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 					 find = true;
 				}*/
 				int statePos = find_if(this->layers[i].begin(), this->layers[i].end(), [&idArrivalState, i](const State& state) {return state.getId() == idArrivalState;}) - this->layers[i].begin();
-				arrivalState = make_shared<State>(this->layers[i][statePos]);
-				state.addTransition(arrivalState, edge.getTransition(), edge.getWeight());
+				//arrivalState = make_shared<State>(this->layers[i][statePos]);
+				state.addTransition(make_shared<State>(this->layers[i][statePos]), edge.getTransition(), edge.getWeight());
 			}
 		}
 	}
@@ -69,7 +69,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 	//Destination
 	this->destination = State(-2, true);
 
-	for (State state : this->layers[this->layers.size() - 1]) {
+	for (State& state : this->layers[this->layers.size() - 1]) {
 		if (state.getFinal()) {
 			Edge newEdge = Edge(make_shared<State>(this->destination), "", 0);
 			state.addTransition(newEdge);
