@@ -62,9 +62,9 @@ AFDGraph buildGraphTransitionFile(string fileName)
 		transitionLines.push_back(split(line, ' '));
 		numTransition++;
 	}
-	
+
 	vector<State> states = vector<State>();
-	for(int i = 1; i <= nbStates; i++)
+	for (int i = 1; i <= nbStates; i++)
 	{
 
 		if (find(finalStates.begin(), finalStates.end(), to_string(i)) != finalStates.end())
@@ -82,9 +82,9 @@ AFDGraph buildGraphTransitionFile(string fileName)
 	}
 
 	AFDGraph graph = AFDGraph();
-	for(State state : states)
+	for (State state : states)
 	{
-		if(state.getId() == initialState) graph.addState(state, true);
+		if (state.getId() == initialState) graph.addState(state, true);
 		else graph.addState(state, false);
 	}
 
@@ -130,8 +130,12 @@ int main()
 		try
 		{
 			AFDGraph graph = buildGraphTransitionFile(transitionFilName);
+			int wordLength = 4;
+			LayerGraph laterGraph = LayerGraph(graph, 4);
+			cout << laterGraph << endl;
 			fileFound = true;
-		} catch(...)
+		}
+		catch (...)
 		{
 			cout << "\nErreur le fichier n'a pas été trouvé." << endl;
 			cout << "Entrez le nom du fichier contenant les transitions : " << endl;
@@ -139,7 +143,7 @@ int main()
 			cin.ignore(256, '\n');
 			cin >> transitionFilName;
 		}
-		
+
 	}
 
 	cout << "Entrez le nom du fichier contenant les limites : " << endl;
