@@ -55,8 +55,8 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 							break;
 						}
 					}
-					 arrivalState = *it;
-					 find = true;
+					arrivalState = *it;
+					find = true;
 				}
 				state.addTransition(make_shared<State>(arrivalState), edge.getTransition(), edge.getWeight());
 			}

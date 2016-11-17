@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AFDGraph.h"
 #include <iostream>
+#include "NotFoundException.h"
 
 using namespace std;
 
@@ -57,8 +58,7 @@ State & AFDGraph::getStartState()
 			return *it;
 		}
 	}
-	std::cout << "getStartState() not found" << std::endl;
-	return State();
+	throw NotFoundException();
 }
 
 State & AFDGraph::getState(const State & state)
@@ -69,8 +69,7 @@ State & AFDGraph::getState(const State & state)
 			break;
 		}
 	}
-	std::cout << "getState(const State & state) not found" << std::endl;
-	return State();
+	throw NotFoundException();
 }
 
 const vector<State>& AFDGraph::getStates() const
