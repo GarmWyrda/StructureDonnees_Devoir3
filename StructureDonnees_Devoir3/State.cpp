@@ -30,7 +30,7 @@ int State::getId() const
 }
 
 
-bool State::getFinal()
+bool State::getFinal() const
 {
 	return this->isfinal;
 }
@@ -40,12 +40,12 @@ void State::setFinal(bool newFinal)
 	this->isfinal = newFinal;
 }
 
-size_t State::getNbTransitions()
+size_t State::getNbTransitions() const
 {
 	return this->transitions.size();
 }
 
-vector<Edge> State::getTransitions()
+vector<Edge> State::getTransitions() const
 {
 	return this->transitions;
 }
@@ -60,9 +60,14 @@ void State::addTransition(Edge newEdge)
 	this->transitions.push_back(newEdge);
 }
 
-void State::setClosed(bool isClosed)
+void State::setNodeState(shared_ptr<NodeState> nodeState)
 {
-	this->closed = isClosed;
+	this->nodeSate = nodeState;
+}
+
+shared_ptr<NodeState> State::getNodeState() const
+{
+	return this->nodeSate;
 }
 
 void State::addTransition(shared_ptr<State> outState, string transition, int weight)
@@ -71,12 +76,22 @@ void State::addTransition(shared_ptr<State> outState, string transition, int wei
 	this->transitions.push_back(newEdge);
 }
 
-bool State::isClosed()
+bool State::operator<(const State state) const
 {
-	return this->closed;
+	return this->getNodeState()->getCost() < state.getNodeState()->getCost();
 }
 
-bool const operator==(State const & state, State const & otherState)
+bool State::operator>(const State state) const
 {
-	return state.getId() == otherState.getId();
+	return this->getNodeState()->getCost() > state.getNodeState()->getCost();
+}
+
+bool State::operator==(const State state) const
+{
+	return this->getNodeState()->getCost() == state.getNodeState()->getCost();
+}
+
+bool State::operator!=(const State state) const
+{
+	return this->getNodeState()->getCost() != state.getNodeState()->getCost();
 }

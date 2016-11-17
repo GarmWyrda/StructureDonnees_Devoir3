@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "LayerGraph.h"
+#include <algorithm>
 
 LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 {
@@ -64,29 +65,69 @@ LayerGraph::~LayerGraph()
 vector<State> LayerGraph::findShortestPath()
 {
 	bool goalReached = _propagateStates(source, destination, 0);
-	//if (goalReached)
-		//return buildOptimalPath(source, destination);
+	if (goalReached)
+		return _buildOptimalPath(source, destination);
+	else
+		return vector<State>();
 }
 
 
 bool LayerGraph::_propagateStates(State startState, State goalState, int sumCost)
 {
 	vector<State> heap = vector<State>();
+	make_heap(heap.begin(), heap.end());
 	int trialCost = 0;
-	State currentState = startState;
 
+	for(vector<State> layer : layers)
+	{
+		for(State state : layer)
+		{
+			state.setNodeState(nullptr);
+		}
+	}
+	startState.setNodeState(make_shared<NodeState>(false, nullptr, 0));
+
+	State currentState = startState;
 	do {
-		currentState.setClosed(true);
+		currentState.getNodeState()->setClosed(true);
 		for (Edge transition : currentState.getTransitions())
 		{
-			trialCost = sumCost + transition.getWeight();
-			if(!transition.getArrivalState()->isClosed())
+			trialCost = currentState.getNodeState()->getCost() + transition.getWeight();
+			shared_ptr<State> arrivalState = transition.getArrivalState();
+			if(arrivalState->getNodeState() == nullptr)
 			{
-				
+				arrivalState->setNodeState(make_shared<NodeState>(false, make_shared<State>(currentState), trialCost));
+				heap.push_back(*arrivalState);
+				push_heap(heap.begin(), heap.end());
+				sort_heap(heap.begin(), heap.end());
+			} else
+			{
+				if(!arrivalState->getNodeState()->isClosed() && trialCost < arrivalState->getNodeState()->getCost())
+				{
+					int i = find(heap.begin(), heap.end(), arrivalState) - heap.begin();
+					heap[i].getNodeState()->setCost(trialCost);
+					arrivalState->getNodeState()->setPredecessor(make_shared<State>(currentState));
+					arrivalState->getNodeState()->setCost(trialCost);
+				}
 			}
 		}
-
-	} while (true);
+		
+		currentState = heap.back();
+		pop_heap(heap.begin(), heap.end());
+		sort_heap(heap.begin(), heap.end());
+	} while (!heap.empty() && currentState != goalState);
 	
-	return false;
+	return currentState == goalState;
+}
+
+vector<State> LayerGraph::_buildOptimalPath(State startState, State goalState) const
+{
+	vector<State> path = vector<State>();
+	shared_ptr<State> predecessor = goalState.getNodeState()->getPredecessor();
+	while(predecessor != nullptr)
+	{
+		path.push_back(*predecessor);
+		predecessor = predecessor->getNodeState()->getPredecessor();
+	}
+	return path;
 }
