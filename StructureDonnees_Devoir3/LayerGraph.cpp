@@ -14,14 +14,14 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 	}
 
 	//Source
-	//Create Edge From Source To Start State of AFDGrpah (first Layer)
+	//Create Edge From Source To Start State of AFDGraph (first Layer)
 	vector<Edge> edges = vector<Edge>();
 	int idArrivalFromSource = graph.getStartState().getId();
 	bool find = false;
 	State arrivalState = State();
 	while (!find) {
 		vector<State>::iterator it;
-		for (it = this->layers[i].begin(); it != this->layers[i].end(); ++it) {
+		for (it = this->layers[0].begin(); it != this->layers[0].end(); ++it) {
 			if (it->getId() == idArrivalFromSource) {
 				break;
 			}
@@ -166,5 +166,5 @@ std::ostream & operator<<(std::ostream & stream, const LayerGraph layerGraph)
 		
 	}
 
-
+	return stream;
 }

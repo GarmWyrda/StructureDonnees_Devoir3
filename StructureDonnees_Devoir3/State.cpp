@@ -50,10 +50,6 @@ vector<Edge> State::getTransitions() const
 	return this->transitions;
 }
 
-vector<Edge> State::getTransitions() const
-{
-	return this->transitions;
-}
 
 Edge State::getEdge(int i)
 {
@@ -104,6 +100,7 @@ ostream & operator<<(std::ostream & stream, const State state)
 		stream << edge.getArrivalState();
 	}
 	stream << " ) ";
+	return stream;
 }
 
 bool State::operator!=(const State state) const

@@ -1,4 +1,5 @@
-﻿#include "NodeState.h"
+﻿#include "stdafx.h"
+#include "NodeState.h"
 
 int NodeState::getCost() const
 {
