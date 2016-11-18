@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "LayerGraph.h"
 #include <algorithm>
+#include <iostream>
+using namespace std;
 
 LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 {
@@ -61,6 +63,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 				}*/
 				int statePos = find_if(this->layers[i].begin(), this->layers[i].end(), [&idArrivalState, i](const State& state) {return state.getId() == idArrivalState;}) - this->layers[i].begin();
 				//arrivalState = make_shared<State>(this->layers[i][statePos]);
+				//MAKE_SHARED MAY BE THE PROBLEM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				state.addTransition(make_shared<State>(this->layers[i][statePos]), edge.getTransition(), edge.getWeight());
 			}
 		}
@@ -75,7 +78,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 			state.addTransition(newEdge);
 		}
 	}
-
+	std::cout << "test : " << this->layers[2][0] << endl;
 }
 
 LayerGraph::~LayerGraph()
