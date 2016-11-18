@@ -131,8 +131,9 @@ int main()
 		{
 			AFDGraph graph = buildGraphTransitionFile(transitionFilName);
 			int wordLength = 4;
-			LayerGraph laterGraph = LayerGraph(graph, 4);
-			cout << laterGraph << endl;
+			LayerGraph layerGraph = LayerGraph(graph, 4);
+			cout << layerGraph << endl;
+			vector<State> shortestPath = layerGraph.findShortestPath();
 			fileFound = true;
 		}
 		catch (...)
