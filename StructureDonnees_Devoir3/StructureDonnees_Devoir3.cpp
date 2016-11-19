@@ -139,7 +139,7 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 	}
 	else if (command == "graphe")
 	{
-		//cout << "\n" << graph << endl;
+		cout << "\n" << graph << endl;
 	}
 	else if (command == "lgraphe")
 	{
@@ -198,8 +198,6 @@ int main()
 		try
 		{
 			graph = buildGraphTransitionFile(transitionFilName);
-			cout << "test cout AFDGraph" << endl;
-			cout << graph << endl;
 			fileFound = true;
 		}
 		catch (...)
