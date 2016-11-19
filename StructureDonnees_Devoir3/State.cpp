@@ -77,27 +77,6 @@ void State::addTransition(shared_ptr<State> outState, string transition, int wei
 	this->transitions.push_back(newEdge);
 }
 
-bool State::operator<(const State state) const
-{
-	return this->getNodeState()->getCost() < state.getNodeState()->getCost();
-}
-
-bool State::operator>(const State state) const
-{
-	return this->getNodeState()->getCost() > state.getNodeState()->getCost();
-}
-
-bool State::operator==(const State state) const
-{
-	return this->getNodeState()->getCost() == state.getNodeState()->getCost();
-}
-
-bool State::operator!=(const State state) const
-{
-	return this->getNodeState()->getCost() != state.getNodeState()->getCost();
-}
-
-
 ostream & operator<<(std::ostream & stream, const State state)
 {
 	stream << state.getId() << "---> ";

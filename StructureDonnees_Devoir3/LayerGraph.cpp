@@ -6,7 +6,7 @@ using namespace std;
 
 LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 {
-	
+
 	//Layers
 	this->layers = vector<vector<State>>();
 	this->layers.push_back(vector<State>());
@@ -69,71 +69,75 @@ State LayerGraph::getSource() const
 
 vector<State> LayerGraph::findShortestPath()
 {
-	bool goalReached = _propagateStates(source, destination, 0);
+	bool goalReached = _propagateStates(source, destination);
 	if (goalReached)
-		return _buildOptimalPath(source, destination);
+		return _buildOptimalPath(destination);
 	else
 		return vector<State>();
 }
-
-
-bool LayerGraph::_propagateStates(State startState, State goalState, int sumCost)
+bool _compareCosts(const shared_ptr<State>xState, const shared_ptr<State> yState)
 {
-	vector<State> heap = vector<State>();
-	make_heap(heap.begin(), heap.end());
+	return xState->getNodeState()->getCost() > yState->getNodeState()->getCost();
+}
+
+
+bool LayerGraph::_propagateStates(State startState, State goalState)
+{
+	vector<shared_ptr<State>> heap = vector<shared_ptr<State>>();
 	int trialCost = 0;
 
-	for(vector<State> layer : layers)
+	for (vector<State> layer : layers)
 	{
-		for(State state : layer)
+		for (State state : layer)
 		{
 			state.setNodeState(nullptr);
 		}
 	}
 	startState.setNodeState(make_shared<NodeState>(false, nullptr, 0));
 
-	State currentState = startState;
+	shared_ptr<State> currentState = make_shared<State>(startState);
 	do {
-		currentState.getNodeState()->setClosed(true);
-		for (Edge transition : currentState.getTransitions())
+		currentState->getNodeState()->setClosed(true);
+		for (Edge transition : currentState->getTransitions())
 		{
-			trialCost = currentState.getNodeState()->getCost() + transition.getWeight();
+			trialCost = currentState->getNodeState()->getCost() + transition.getWeight();
 			shared_ptr<State> arrivalState = transition.getArrivalState();
-			if(arrivalState->getNodeState() == nullptr)
+			if (arrivalState->getNodeState() == nullptr)
 			{
-				arrivalState->setNodeState(make_shared<NodeState>(false, make_shared<State>(currentState), trialCost));
-				heap.push_back(*arrivalState);
-				push_heap(heap.begin(), heap.end());
-				sort_heap(heap.begin(), heap.end());
-			} else
+
+				arrivalState->setNodeState(make_shared<NodeState>(false, currentState, trialCost));
+				heap.push_back(arrivalState);
+				sort(heap.begin(), heap.end(), &_compareCosts);
+			}
+			else
 			{
-				if(!arrivalState->getNodeState()->isClosed() && trialCost < arrivalState->getNodeState()->getCost())
+				if (!arrivalState->getNodeState()->isClosed() && trialCost < arrivalState->getNodeState()->getCost())
 				{
-					int i = find(heap.begin(), heap.end(), *arrivalState) - heap.begin();
-					heap[i].getNodeState()->setCost(trialCost);
-					arrivalState->getNodeState()->setPredecessor(make_shared<State>(currentState));
+					int i = find(heap.begin(), heap.end(), arrivalState) - heap.begin();
+					heap[i]->getNodeState()->setCost(trialCost);
+					arrivalState->getNodeState()->setPredecessor(currentState);
 					arrivalState->getNodeState()->setCost(trialCost);
 				}
 			}
 		}
-		
-		pop_heap(heap.begin(), heap.end());
+
 		currentState = heap.back();
 		heap.pop_back();
-		sort_heap(heap.begin(), heap.end());
-	} while (currentState.getId() != goalState.getId());
-	
-	return currentState == goalState;
+
+	} while (currentState->getId() != goalState.getId());
+
+	return currentState->getId() == goalState.getId();
 }
 
-vector<State> LayerGraph::_buildOptimalPath(State startState, State goalState) const
+vector<State> LayerGraph::_buildOptimalPath(State goalState) const
 {
 	vector<State> path = vector<State>();
-	shared_ptr<State> predecessor = goalState.getNodeState()->getPredecessor();
-	while(predecessor != nullptr)
+	shared_ptr<State> predecessor = make_shared<State>(goalState);
+	while (predecessor != nullptr)
 	{
 		path.push_back(*predecessor);
 		predecessor = predecessor->getNodeState()->getPredecessor();
+		//Edge transition = find_if(predecessor->getTransitions().begin(), predecessor->getTransitions().end(), [&predecessor](const Edge& transition){ transition.getArrivalState()->getId() == predecessor->getId()} )
 	}
 	return path;
 }
@@ -147,7 +151,7 @@ std::ostream & operator<<(std::ostream & stream, const LayerGraph layerGraph)
 	stream << "---- Loop from Layer 0 ----" << endl;
 	for (State state : layerGraph.layers[0]) {
 		stream << state << endl;
-		
+
 	}
 
 	return stream;

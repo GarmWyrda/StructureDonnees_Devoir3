@@ -76,7 +76,7 @@ AFDGraph buildGraphTransitionFile(string fileName)
 	for (int i = 0; i < nbTransition; i++)
 	{
 		vector<State>::iterator itArrivalState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][2]);});
-		Edge transition = Edge(make_shared<State>(*itArrivalState), transitionLines[i][3], stoi(transitionLines[i][0]));
+		Edge transition = Edge(make_shared<State>(*itArrivalState), transitionLines[i][0], stoi(transitionLines[i][3]));
 		vector<State>::iterator itStartState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][1]);});
 		itStartState->addTransition(transition);
 	}
@@ -89,11 +89,9 @@ AFDGraph buildGraphTransitionFile(string fileName)
 	}
 
 	return graph;
-
-
 }
 
-bool readLimitsFile(string fileName)
+LayerGraph buildLayerGraph(AFDGraph graph, string fileName)
 {
 	ifstream infile(fileName);
 	int alphabetSize;
@@ -113,7 +111,7 @@ bool readLimitsFile(string fileName)
 	getline(infile, line);
 	maxValues = split(line, ' ');
 
-	return true;
+	return LayerGraph(graph, wordSize);
 }
 
 int main()
@@ -124,16 +122,12 @@ int main()
 	string transitionFilName;
 	cin >> transitionFilName;
 	bool fileFound = false;
-	AFDGraph graph = AFDGraph();
+	AFDGraph graph;
 	while (!fileFound)
 	{
 		try
 		{
-			AFDGraph graph = buildGraphTransitionFile(transitionFilName);
-			int wordLength = 4;
-			LayerGraph layerGraph = LayerGraph(graph, 4);
-			cout << layerGraph << endl;
-			vector<State> shortestPath = layerGraph.findShortestPath();
+			graph = buildGraphTransitionFile(transitionFilName);
 			fileFound = true;
 		}
 		catch (...)
@@ -156,7 +150,13 @@ int main()
 	{
 		try
 		{
-			readLimitsFile(limitsFileName);
+			LayerGraph layerGraph = buildLayerGraph(graph, limitsFileName);
+			vector<State> shortestPath = layerGraph.findShortestPath();
+			cout << "Path is: ";
+			for(State state: shortestPath)
+			{
+				cout << state.getId() + " ";
+			}
 			fileFound = true;
 		}
 		catch (...)
@@ -169,10 +169,14 @@ int main()
 		}
 
 	}
-
-	LayerGraph layergraph = LayerGraph(graph, 3);
-	std::cout << layergraph << std::endl;
-
+	cout << "---------- Les commandes possibles sont les suivantes ----------\n" << endl;
+	cout << "- help, ? : affiche la liste des commandes" << endl;
+	cout << "- graphe: affiche à l'écran les noeuds du graphe AFD" << endl;
+	cout << "- lgraphe: affiche à l'écran les noeuds du graphe par couche" << endl;
+	cout << "- fichier: écrit les noeuds du plus court chemin dans un fichier" << endl;
+	cout << "- plus court chemin: calcule et affiche le plus court chemin" << endl;
+	cout << "- recherche [lettre]: affiche les arêtes lisant la lettre indiquée" << endl;
+	
 	system("pause");
 	return 0;
 }
