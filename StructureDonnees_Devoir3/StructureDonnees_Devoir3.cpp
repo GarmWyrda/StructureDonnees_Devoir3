@@ -114,6 +114,76 @@ LayerGraph buildLayerGraph(AFDGraph graph, string fileName)
 	return LayerGraph(graph, wordSize);
 }
 
+void displayCommands()
+{
+	cout << "---------- Les commandes possibles sont les suivantes ----------\n" << endl;
+	cout << "- help, ? : affiche la liste des commandes" << endl;
+	cout << "- graphe : affiche à l'ecran les noeuds du graphe AFD" << endl;
+	cout << "- lgraphe : affiche à l'ecran les noeuds du graphe par couche" << endl;
+	cout << "- fichier : ecrit les noeuds du plus court chemin dans un fichier" << endl;
+	cout << "- plus court chemin : calcule et affiche le plus court chemin" << endl;
+	cout << "- recherche [lettre] : affiche les aretes lisant la lettre indiquee" << endl;
+	cout << "- quitter : quitte le programme.\n" << endl;
+
+}
+void readCommand(AFDGraph graph, LayerGraph layerGraph) {
+
+	cout << "commande : ";
+	string command;
+	getline(cin, command);
+
+	if (command == "help" || command == "?")
+	{
+		displayCommands();
+
+	}
+	else if (command == "graphe")
+	{
+		//cout << "\n" << graph << endl;
+	}
+	else if (command == "lgraphe")
+	{
+		cout << "\n" << layerGraph << endl;
+	}
+	else if (command == "fichier")
+	{
+		//NOT IMPLEMENTED YET
+	}
+	else if (command == "plus court chemin")
+	{
+		cout << "Les noeuds parcourus sont : ";
+		vector<State> path = layerGraph.findShortestPath();
+		for (size_t i = path.size() - 2; i > 0; i--)
+		{
+			cout << path[i].getId() << "-";
+		}
+		cout << "\nCout total : " << path.front().getNodeState()->getCost() << endl;
+		cout << "Le mot construit est : ";
+		for (size_t i = path.size() - 2; i > 0; i--)
+		{
+			int arrivalId = path[i-1].getId();
+			vector<Edge> previousStateTransitions = path[i].getTransitions();
+			vector<Edge>::iterator itTransition = find_if(previousStateTransitions.begin(), previousStateTransitions.end(), [arrivalId](const Edge& transition) {return transition.getArrivalState()->getId() == arrivalId;});
+			cout << itTransition->getTransition();
+		}
+		cout << endl;
+
+	}
+	else if (strncmp(command.c_str(), "recherche", strlen("recherche")) == 0)
+	{
+		//NOT IMPLEMENTED YET
+	}
+	else if (command == "quitter")
+	{
+		return;
+	}
+	else
+	{
+		cout << "commande non trouvee, veuillez reessayer ou entrez 'help' ou '?' pour afficher la liste des commandes" << endl;
+	}
+	readCommand(graph, layerGraph);
+}
+
 int main()
 {
 	cout << "\t Plus court chemin avec contraintes pour graphe par couche\n" << endl;
@@ -134,7 +204,7 @@ int main()
 		}
 		catch (...)
 		{
-			cout << "\nErreur le fichier n'a pas été trouvé." << endl;
+			cout << "\nErreur le fichier n'a pas ete trouve." << endl;
 			cout << "Entrez le nom du fichier contenant les transitions : " << endl;
 			cin.clear();
 			cin.ignore(256, '\n');
@@ -153,17 +223,13 @@ int main()
 		try
 		{
 			LayerGraph layerGraph = buildLayerGraph(graph, limitsFileName);
-			vector<State> shortestPath = layerGraph.findShortestPath();
-			cout << "Path is: ";
-			for(State state: shortestPath)
-			{
-				cout << state.getId() + " ";
-			}
 			fileFound = true;
+			displayCommands();
+			readCommand(graph, layerGraph);
 		}
 		catch (...)
 		{
-			cout << "\nErreur le fichier n'a pas été trouvé." << endl;
+			cout << "\nErreur le fichier n'a pas ete trouve." << endl;
 			cout << "Entrez le nom du fichier contenant les transitions : " << endl;
 			cin.clear();
 			cin.ignore(256, '\n');
@@ -171,15 +237,7 @@ int main()
 		}
 
 	}
-	cout << "---------- Les commandes possibles sont les suivantes ----------\n" << endl;
-	cout << "- help, ? : affiche la liste des commandes" << endl;
-	cout << "- graphe: affiche à l'écran les noeuds du graphe AFD" << endl;
-	cout << "- lgraphe: affiche à l'écran les noeuds du graphe par couche" << endl;
-	cout << "- fichier: écrit les noeuds du plus court chemin dans un fichier" << endl;
-	cout << "- plus court chemin: calcule et affiche le plus court chemin" << endl;
-	cout << "- recherche [lettre]: affiche les arêtes lisant la lettre indiquée" << endl;
-	
-	system("pause");
+
 	return 0;
 }
 

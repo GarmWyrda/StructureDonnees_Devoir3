@@ -8,8 +8,7 @@ private:
 	State source;
 	State destination;
 	vector<vector<State>> layers;
-	bool _propagateStates(State startSate, State goalState);
-	vector<State> _buildOptimalPath(State goalState) const;
+	vector<State> _djiskta(State startState, State goalState);
 
 public:
 	LayerGraph(AFDGraph graph, int wordLength);

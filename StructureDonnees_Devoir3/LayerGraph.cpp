@@ -25,7 +25,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 	edges.push_back(edge);
 	this->source = State(-1, false, edges);
 
-	for (int i = 1; i < wordLength; i++) {
+	for (int i = 1; i <= wordLength; i++) {
 		this->layers.push_back(vector<State>());
 		for (State state : graph.getStates()) {
 			State newState = State(state.getId(), state.getFinal());
@@ -69,11 +69,8 @@ State LayerGraph::getSource() const
 
 vector<State> LayerGraph::findShortestPath()
 {
-	bool goalReached = _propagateStates(source, destination);
-	if (goalReached)
-		return _buildOptimalPath(destination);
-	else
-		return vector<State>();
+
+		return _djiskta(source, destination);
 }
 bool _compareCosts(const shared_ptr<State>xState, const shared_ptr<State> yState)
 {
@@ -81,8 +78,9 @@ bool _compareCosts(const shared_ptr<State>xState, const shared_ptr<State> yState
 }
 
 
-bool LayerGraph::_propagateStates(State startState, State goalState)
+vector<State> LayerGraph::_djiskta(State startState, State goalState)
 {
+	//Propagate states
 	vector<shared_ptr<State>> heap = vector<shared_ptr<State>>();
 	int trialCost = 0;
 
@@ -126,21 +124,24 @@ bool LayerGraph::_propagateStates(State startState, State goalState)
 
 	} while (currentState->getId() != goalState.getId());
 
-	return currentState->getId() == goalState.getId();
+	//Build optimal path
+	if(currentState->getId() == goalState.getId())
+	{
+		vector<State> path = vector<State>();
+		shared_ptr<State> predecessor = currentState;
+		while (predecessor != nullptr)
+		{
+			path.push_back(*predecessor);
+			predecessor = predecessor->getNodeState()->getPredecessor();
+			//Edge transition = find_if(predecessor->getTransitions().begin(), predecessor->getTransitions().end(), [&predecessor](const Edge& transition){ transition.getArrivalState()->getId() == predecessor->getId()} )
+		}
+		return path;
+	} else
+	{
+		return vector<State>();
+	}
 }
 
-vector<State> LayerGraph::_buildOptimalPath(State goalState) const
-{
-	vector<State> path = vector<State>();
-	shared_ptr<State> predecessor = make_shared<State>(goalState);
-	while (predecessor != nullptr)
-	{
-		path.push_back(*predecessor);
-		predecessor = predecessor->getNodeState()->getPredecessor();
-		//Edge transition = find_if(predecessor->getTransitions().begin(), predecessor->getTransitions().end(), [&predecessor](const Edge& transition){ transition.getArrivalState()->getId() == predecessor->getId()} )
-	}
-	return path;
-}
 
 std::ostream & operator<<(std::ostream & stream, const LayerGraph layerGraph)
 {
