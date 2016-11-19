@@ -12,6 +12,9 @@
 #include <algorithm>
 #include "AFDGraph.h"
 #include "LayerGraph.h"
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 using namespace std;
 
 
@@ -26,7 +29,7 @@ vector<string> split(const string &s, char delim) {
 	return result;
 }
 
-AFDGraph buildGraphTransitionFile(string fileName)
+AFDGraph* buildGraphTransitionFile(string fileName)
 {
 	ifstream infile(fileName);
 	int alphabetSize;
@@ -63,29 +66,30 @@ AFDGraph buildGraphTransitionFile(string fileName)
 		numTransition++;
 	}
 
-	vector<State> states = vector<State>();
+	vector<State*> states = vector<State*>();
 	for (int i = 1; i <= nbStates; i++)
 	{
 
 		if (find(finalStates.begin(), finalStates.end(), to_string(i)) != finalStates.end())
-			states.push_back(State(i, true));
+			states.push_back(new State(i, true));
 		else
-			states.push_back(State(i, false));
+			states.push_back(new State(i, false));
 	}
 
 	for (int i = 0; i < nbTransition; i++)
 	{
-		vector<State>::iterator itArrivalState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][2]);});
-		Edge transition = Edge(make_shared<State>(*itArrivalState), transitionLines[i][0], stoi(transitionLines[i][3]));
-		vector<State>::iterator itStartState = find_if(states.begin(), states.end(), [&transitionLines, i](const State& state) {return state.getId() == stoi(transitionLines[i][1]);});
-		itStartState->addTransition(transition);
+		vector<State*>::iterator itArrivalState = find_if(states.begin(), states.end(), [&transitionLines, i](const State* state) {return state->getId() == stoi(transitionLines[i][2]);});
+		Edge transition = Edge(*itArrivalState, transitionLines[i][0], stoi(transitionLines[i][3]));
+		vector<State*>::iterator itStartState = find_if(states.begin(), states.end(), [&transitionLines, i](const State* state) {return state->getId() == stoi(transitionLines[i][1]);});
+		State* startState = *itStartState;
+		startState->addTransition(transition);
 	}
 
-	AFDGraph graph = AFDGraph();
-	for (State state : states)
+	AFDGraph* graph = new AFDGraph();
+	for (State* state : states)
 	{
-		if (state.getId() == initialState) graph.addState(state, true);
-		else graph.addState(state, false);
+		if (state->getId() == initialState) graph->addState(*state, true);
+		else graph->addState(*state, false);
 	}
 
 	return graph;
@@ -192,7 +196,7 @@ int main()
 	string transitionFilName;
 	cin >> transitionFilName;
 	bool fileFound = false;
-	AFDGraph graph;
+	AFDGraph* graph = nullptr;
 	while (!fileFound)
 	{
 		try
@@ -220,10 +224,10 @@ int main()
 	{
 		try
 		{
-			LayerGraph layerGraph = buildLayerGraph(graph, limitsFileName);
+			LayerGraph layerGraph = buildLayerGraph(*graph, limitsFileName);
 			fileFound = true;
 			displayCommands();
-			readCommand(graph, layerGraph);
+			readCommand(*graph, layerGraph);
 		}
 		catch (...)
 		{
@@ -235,7 +239,7 @@ int main()
 		}
 
 	}
-
+	_CrtDumpMemoryLeaks();
 	return 0;
 }
 

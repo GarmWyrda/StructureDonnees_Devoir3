@@ -4,7 +4,7 @@
 
 
 
-Edge::Edge(shared_ptr<State> arrivalState, string transition, int weight) : arrivalState(arrivalState)
+Edge::Edge(State* arrivalState, string transition, int weight) : arrivalState(arrivalState)
 {
 	this->arrivalState = arrivalState;
 	this->transition = transition;
@@ -23,7 +23,7 @@ Edge::~Edge()
 {
 }
 
-shared_ptr<State> Edge::getArrivalState() const
+State* Edge::getArrivalState() const
 {
 	return this->arrivalState;
 }

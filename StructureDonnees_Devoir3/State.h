@@ -11,7 +11,7 @@ private :
 	int id;
 	bool isfinal;
 	vector<Edge> transitions;
-	shared_ptr<NodeState> nodeSate = nullptr;
+	NodeState* nodeSate = nullptr;
 
 public:
 	State();
@@ -25,9 +25,9 @@ public:
 	vector<Edge> getTransitions() const;
 	Edge getEdge(int i);
 	void addTransition(Edge newEdge);
-	void addTransition(shared_ptr<State> outState, string transition, int weight);
-	void setNodeState(shared_ptr<NodeState> nodeState);
-	shared_ptr<NodeState> getNodeState() const;
+	void addTransition(State* outState, string transition, int weight);
+	void setNodeState(NodeState* nodeState);
+	NodeState* getNodeState() const;
 
 	friend ostream& operator<< (ostream&, const State);
 };

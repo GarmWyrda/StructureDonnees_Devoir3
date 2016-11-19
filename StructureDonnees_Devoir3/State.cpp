@@ -22,6 +22,7 @@ State::State(int id, bool isfinal)
 
 State::~State()
 {
+	
 }
 
 int State::getId() const
@@ -61,17 +62,17 @@ void State::addTransition(Edge newEdge)
 	this->transitions.push_back(newEdge);
 }
 
-void State::setNodeState(shared_ptr<NodeState> nodeState)
+void State::setNodeState(NodeState* nodeState)
 {
 	this->nodeSate = nodeState;
 }
 
-shared_ptr<NodeState> State::getNodeState() const
+NodeState* State::getNodeState() const
 {
 	return this->nodeSate;
 }
 
-void State::addTransition(shared_ptr<State> outState, string transition, int weight)
+void State::addTransition(State* outState, string transition, int weight)
 {
 	Edge newEdge = Edge(outState, transition, weight);
 	this->transitions.push_back(newEdge);

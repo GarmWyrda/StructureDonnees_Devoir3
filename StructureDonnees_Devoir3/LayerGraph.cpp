@@ -20,7 +20,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 	vector<Edge> edges = vector<Edge>();
 	int idArrivalFromSource = graph.getStartState().getId();
 	int statePos = find_if(this->layers[0].begin(), this->layers[0].end(), [idArrivalFromSource](const State& state) {return state.getId() == idArrivalFromSource; }) - this->layers[0].begin();
-	shared_ptr<State> arrivalFromSource(&this->layers[0][statePos]);
+	State* arrivalFromSource = &this->layers[0][statePos];
 	Edge edge = Edge(arrivalFromSource, "", 0);
 	edges.push_back(edge);
 	this->source = State(-1, false, edges);
@@ -39,7 +39,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 			for (Edge edge : stateInAFDGraph.getTransitions()) {
 				int idArrivalState = edge.getArrivalState()->getId();
 				int statePos = find_if(this->layers[i].begin(), this->layers[i].end(), [&idArrivalState, i](const State& state) {return state.getId() == idArrivalState;}) - this->layers[i].begin();
-				shared_ptr<State> arrivalState(&this->layers[i][statePos]);
+				State* arrivalState = &this->layers[i][statePos];
 				state.addTransition(arrivalState, edge.getTransition(), edge.getWeight());
 			}
 		}
@@ -50,7 +50,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 
 	for (State& state : this->layers[this->layers.size() - 1]) {
 		if (state.getFinal()) {
-			shared_ptr<State> destination(&this->destination);
+			State* destination = &this->destination;
 			Edge newEdge = Edge(destination, "", 0);
 			state.addTransition(newEdge);
 		}
@@ -60,6 +60,7 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength)
 
 LayerGraph::~LayerGraph()
 {
+	delete[] &source;
 }
 
 State LayerGraph::getSource() const
@@ -72,7 +73,7 @@ vector<State> LayerGraph::findShortestPath()
 
 		return _djiskta(source, destination);
 }
-bool _compareCosts(const shared_ptr<State>xState, const shared_ptr<State> yState)
+bool _compareCosts(State const* xState, State const *yState)
 {
 	return xState->getNodeState()->getCost() > yState->getNodeState()->getCost();
 }
@@ -81,7 +82,7 @@ bool _compareCosts(const shared_ptr<State>xState, const shared_ptr<State> yState
 vector<State> LayerGraph::_djiskta(State startState, State goalState)
 {
 	//Propagate states
-	vector<shared_ptr<State>> heap = vector<shared_ptr<State>>();
+	vector<State*> heap = vector<State*>();
 	int trialCost = 0;
 
 	for (vector<State> layer : layers)
@@ -91,19 +92,20 @@ vector<State> LayerGraph::_djiskta(State startState, State goalState)
 			state.setNodeState(nullptr);
 		}
 	}
-	startState.setNodeState(make_shared<NodeState>(false, nullptr, 0));
 
-	shared_ptr<State> currentState = make_shared<State>(startState);
+	startState.setNodeState(new NodeState(false, nullptr, 0));
+
+	State* currentState = new State(startState);
 	do {
 		currentState->getNodeState()->setClosed(true);
 		for (Edge transition : currentState->getTransitions())
 		{
 			trialCost = currentState->getNodeState()->getCost() + transition.getWeight();
-			shared_ptr<State> arrivalState = transition.getArrivalState();
+			State* arrivalState = transition.getArrivalState();
 			if (arrivalState->getNodeState() == nullptr)
 			{
 
-				arrivalState->setNodeState(make_shared<NodeState>(false, currentState, trialCost));
+				arrivalState->setNodeState(new NodeState(false, currentState, trialCost));
 				heap.push_back(arrivalState);
 				sort(heap.begin(), heap.end(), &_compareCosts);
 			}
@@ -128,12 +130,11 @@ vector<State> LayerGraph::_djiskta(State startState, State goalState)
 	if(currentState->getId() == goalState.getId())
 	{
 		vector<State> path = vector<State>();
-		shared_ptr<State> predecessor = currentState;
+		State* predecessor = currentState;
 		while (predecessor != nullptr)
 		{
 			path.push_back(*predecessor);
 			predecessor = predecessor->getNodeState()->getPredecessor();
-			//Edge transition = find_if(predecessor->getTransitions().begin(), predecessor->getTransitions().end(), [&predecessor](const Edge& transition){ transition.getArrivalState()->getId() == predecessor->getId()} )
 		}
 		return path;
 	} else

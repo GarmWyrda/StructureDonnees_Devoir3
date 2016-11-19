@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "NodeState.h"
+#include "State.h"
 
 int NodeState::getCost() const
 {
@@ -11,7 +12,7 @@ void NodeState::setClosed(bool closed)
 	this->closed = closed;
 }
 
-void NodeState::setPredecessor(shared_ptr<State> predecessor)
+void NodeState::setPredecessor(State* predecessor)
 {
 	this->predecessor = predecessor;
 }
@@ -21,7 +22,7 @@ void NodeState::setCost(int cost)
 	this->cost = cost;
 }
 
-shared_ptr<State> NodeState::getPredecessor() const
+State* NodeState::getPredecessor() const
 {
 	return predecessor;
 }
@@ -35,7 +36,11 @@ NodeState::NodeState(const NodeState& copy)
 
 }
 
-NodeState::NodeState(bool closed, shared_ptr<State> predecessor, int cost)
+NodeState::~NodeState()
+{
+}
+
+NodeState::NodeState(bool closed, State* predecessor, int cost)
 {
 	this->closed = closed;
 	this->predecessor = predecessor;

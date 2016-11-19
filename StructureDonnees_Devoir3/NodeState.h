@@ -7,19 +7,20 @@ class NodeState
 {
 private:
 	bool closed = false;
-	shared_ptr<State> predecessor = nullptr;
+	State* predecessor = nullptr;
 	int cost = 0;
 public:
 
-	explicit NodeState(bool closed = false, shared_ptr<State> predecessor = nullptr, int cost = 0);
+	explicit NodeState(bool closed = false, State* predecessor = nullptr, int cost = 0);
 	NodeState(const NodeState& copy);
+	virtual ~NodeState();
 
 	bool isClosed() const;
-	shared_ptr<State> getPredecessor() const;
+	State* getPredecessor() const;
 	int getCost() const;
 
 	void setClosed(bool closed);
-	void setPredecessor(shared_ptr<State> predecessor);
+	void setPredecessor(State* predecessor);
 	void setCost(int cost);
 
 };
