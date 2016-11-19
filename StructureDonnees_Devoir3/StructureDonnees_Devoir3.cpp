@@ -130,6 +130,8 @@ int main()
 		try
 		{
 			AFDGraph graph = buildGraphTransitionFile(transitionFilName);
+			cout << "test AFDGraph" << endl;
+			cout << graph << endl;
 			int wordLength = 4;
 			LayerGraph layerGraph = LayerGraph(graph, 4);
 			cout << layerGraph << endl;

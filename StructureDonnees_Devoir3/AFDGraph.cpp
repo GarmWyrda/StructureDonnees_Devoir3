@@ -18,6 +18,11 @@ AFDGraph::~AFDGraph()
 {
 }
 
+int AFDGraph::getIdStart() const
+{
+	return this->idStartState;
+}
+
 void AFDGraph::setStartState(int idStartState)
 {
 	this->idStartState = idStartState;
@@ -90,4 +95,21 @@ State & AFDGraph::getState(const State & state)
 const vector<State>& AFDGraph::getStates() const
 {
 	return this->states;
+}
+
+std::ostream & operator<<(std::ostream & stream, const AFDGraph afdGraph)
+{
+	stream << "this is the ID of the starting State : " << endl;
+	stream << afdGraph.getIdStart() << endl;
+
+	stream << "each line represents a state and all of his direct neighbors" << endl;
+	for (State state : afdGraph.getStates()) {
+		stream << state.getId() << "---> ";
+		for (Edge edge : state.getTransitions()) {
+			stream << edge.getArrivalState()->getId();
+			stream << " and ";
+		}
+		stream << endl;
+	}
+	return stream;
 }

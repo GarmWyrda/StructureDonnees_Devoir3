@@ -11,6 +11,7 @@ private :
 public:
 	AFDGraph();
 	virtual ~AFDGraph();
+	int getIdStart() const;
 	void setStartState(int idStartState);
 	void addNewState(int id, bool isfinal, bool start);
 	void addState(State state, bool start);
@@ -18,6 +19,7 @@ public:
 	State &getStartState();
 	State &getState(const State &state);
 	const vector<State> &getStates() const;
+	friend std::ostream& operator<< (std::ostream&, const AFDGraph);
 
 };
 
