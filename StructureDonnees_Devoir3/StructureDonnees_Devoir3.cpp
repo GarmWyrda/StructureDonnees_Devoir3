@@ -128,6 +128,8 @@ int main()
 		try
 		{
 			graph = buildGraphTransitionFile(transitionFilName);
+			cout << "test cout AFDGraph" << endl;
+			cout << graph << endl;
 			fileFound = true;
 		}
 		catch (...)
