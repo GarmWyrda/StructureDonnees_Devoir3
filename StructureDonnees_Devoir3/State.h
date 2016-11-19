@@ -30,9 +30,5 @@ public:
 	shared_ptr<NodeState> getNodeState() const;
 
 	friend ostream& operator<< (ostream&, const State);
-	bool operator<(const State state) const;
-	bool operator>(const State state) const;
-	bool operator==(const State state) const;
-	bool operator!=(const State state) const;
 };
 
