@@ -100,8 +100,8 @@ LayerGraph buildLayerGraph(AFDGraph graph, string fileName)
 	ifstream infile(fileName);
 	int alphabetSize;
 	int wordSize;
-	vector<string> minValues = vector<string>();
-	vector<string> maxValues = vector<string>();
+	vector<string> minValues, maxValues = vector<string>();
+	vector<int> minValuesInt, maxValuesInt = vector<int>();
 	string line;
 
 	vector<vector<string>> transition = vector<vector<string>>();
@@ -112,10 +112,12 @@ LayerGraph buildLayerGraph(AFDGraph graph, string fileName)
 	wordSize = stoi(line);
 	getline(infile, line);
 	minValues = split(line, ' ');
+	for (string minValue : minValues) minValuesInt.push_back(stoi(minValue));
 	getline(infile, line);
 	maxValues = split(line, ' ');
+	for (string maxValue : maxValues) maxValuesInt.push_back(stoi(maxValue));
 
-	return LayerGraph(graph, wordSize);
+	return LayerGraph(graph, wordSize, minValuesInt, maxValuesInt);
 }
 
 void displayCommands()
@@ -126,6 +128,7 @@ void displayCommands()
 	cout << "- lgraphe : affiche à l'ecran les noeuds du graphe par couche" << endl;
 	cout << "- fichier : ecrit les noeuds du plus court chemin dans un fichier" << endl;
 	cout << "- plus court chemin : calcule et affiche le plus court chemin" << endl;
+	cout << "- plus court chemin sans contraintes : calcule et affiche le plus court chemin sans les contraintes du fichier limite" << endl;
 	cout << "- recherche [lettre] : affiche les aretes lisant la lettre indiquee" << endl;
 	cout << "- quitter : quitte le programme.\n" << endl;
 
@@ -155,6 +158,26 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 	}
 	else if (command == "plus court chemin")
 	{
+		vector<State*> path = vector<State*>();
+		int totalCost = layerGraph.findShortestPathWithLimits(path);
+		cout << "Les noeuds parcourus sont : ";
+		for (size_t i = 0; i < path.size(); i++)
+		{
+			cout << path[i]->getId() << "-";
+		}
+		cout << "\nCout total : " << totalCost << endl;
+		cout << "Le mot construit est : ";
+		for (size_t i = 0; i < path.size() - 1; i++)
+		{
+			int arrivalId = path[i + 1]->getId();
+			vector<Edge> transitions = path[i]->getTransitions();
+			vector<Edge>::iterator itTransition = find_if(transitions.begin(), transitions.end(), [arrivalId](const Edge& transition) {return transition.getArrivalState()->getId() == arrivalId;});
+			cout << itTransition->getTransition() << " ";
+		}
+		cout << endl;
+
+	}
+	else if (command == "plus court chemin sans contraintes") {
 		cout << "Les noeuds parcourus sont : ";
 		vector<State> path = layerGraph.findShortestPath();
 		for (size_t i = path.size() - 2; i > 0; i--)
@@ -165,13 +188,12 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 		cout << "Le mot construit est : ";
 		for (size_t i = path.size() - 2; i > 0; i--)
 		{
-			int arrivalId = path[i-1].getId();
+			int arrivalId = path[i - 1].getId();
 			vector<Edge> previousStateTransitions = path[i].getTransitions();
 			vector<Edge>::iterator itTransition = find_if(previousStateTransitions.begin(), previousStateTransitions.end(), [arrivalId](const Edge& transition) {return transition.getArrivalState()->getId() == arrivalId;});
-			cout << itTransition->getTransition();
+			cout << itTransition->getTransition() << " ";
 		}
 		cout << endl;
-
 	}
 	else if (strncmp(command.c_str(), "recherche", strlen("recherche")) == 0)
 	{

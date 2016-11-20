@@ -22,7 +22,7 @@ State::State(int id, bool isfinal)
 
 State::~State()
 {
-	
+	if (nodeSate != nullptr) delete[] nodeSate;
 }
 
 int State::getId() const

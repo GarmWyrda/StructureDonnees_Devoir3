@@ -38,6 +38,7 @@ NodeState::NodeState(const NodeState& copy)
 
 NodeState::~NodeState()
 {
+	if (predecessor != nullptr) delete[] predecessor;
 }
 
 NodeState::NodeState(bool closed, State* predecessor, int cost)
