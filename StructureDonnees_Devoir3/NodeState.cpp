@@ -9,40 +9,51 @@ int NodeState::getCost() const
 
 void NodeState::setClosed(bool closed)
 {
+	initialized = true;
 	this->closed = closed;
 }
 
 void NodeState::setPredecessor(State* predecessor)
 {
+	initialized = true;
 	this->predecessor = predecessor;
 }
 
 void NodeState::setCost(int cost)
 {
+	initialized = true;
 	this->cost = cost;
 }
 
-State* NodeState::getPredecessor() const
+State* NodeState::getPredecessor()
 {
 	return predecessor;
 }
 
 
-NodeState::NodeState(const NodeState& copy)
+NodeState::NodeState()
 {
-	this->closed = copy.closed;
-	this->predecessor = copy.predecessor;
-	this->cost = copy.cost;
-
+	initialized = false;
+	this->closed = false;
+	this->predecessor = nullptr;
+	this->cost = 0;
 }
 
 NodeState::~NodeState()
 {
-	if (predecessor != nullptr) delete[] predecessor;
 }
 
 NodeState::NodeState(bool closed, State* predecessor, int cost)
 {
+	initialized = true;
+	this->closed = closed;
+	this->predecessor = predecessor;
+	this->cost = cost;
+
+}
+void NodeState::setValues(bool closed, State* predecessor, int cost)
+{
+	initialized = true;
 	this->closed = closed;
 	this->predecessor = predecessor;
 	this->cost = cost;
@@ -51,4 +62,17 @@ NodeState::NodeState(bool closed, State* predecessor, int cost)
 bool NodeState::isClosed() const
 {
 	return closed;
+}
+
+void NodeState::reset()
+{
+	initialized = false;
+	this->closed = false;
+	this->predecessor = nullptr;
+	this->cost = 0;
+}
+
+bool NodeState::exists() const
+{
+	return initialized;
 }

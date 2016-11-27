@@ -126,13 +126,45 @@ void displayCommands()
 	cout << "- help, ? : affiche la liste des commandes" << endl;
 	cout << "- graphe : affiche à l'ecran les noeuds du graphe AFD" << endl;
 	cout << "- lgraphe : affiche à l'ecran les noeuds du graphe par couche" << endl;
-	cout << "- fichier : ecrit les noeuds du plus court chemin dans un fichier" << endl;
 	cout << "- plus court chemin : calcule et affiche le plus court chemin" << endl;
 	cout << "- plus court chemin sans contraintes : calcule et affiche le plus court chemin sans les contraintes du fichier limite" << endl;
-	cout << "- recherche [lettre] : affiche les aretes lisant la lettre indiquee" << endl;
+	cout << "- recherche : recherche une arete." << endl;
 	cout << "- quitter : quitte le programme.\n" << endl;
 
 }
+
+void printShortestPath(vector<State> path)
+{
+	if (!path.empty())
+	{
+		cout << "Les noeuds parcourus sont : ";
+		for (size_t i = path.size() - 1; i > 0; i--)
+		{
+			if (path[i].getId() != -1 || path[i].getId() != -2)
+			{
+				cout << path[i].getId() << "-";
+			}
+		}
+		cout << "\nCout total : " << path.front().getNodeState().getCost() << endl;
+		cout << "Le mot construit est : ";
+		for (size_t i = path.size() - 1; i > 0; i--)
+		{
+			if (path[i].getId() != -1 || path[i].getId() != -2)
+			{
+				int arrivalId = path[i - 1].getId();
+				vector<Edge> previousStateTransitions = path[i].getTransitions();
+				vector<Edge>::iterator itTransition = find_if(previousStateTransitions.begin(), previousStateTransitions.end(), [arrivalId](const Edge& transition) {return transition.getArrivalState()->getId() == arrivalId;});
+				cout << itTransition->getTransition() << " ";
+			}
+		}
+		cout << endl;
+	}
+	else
+	{
+		cout << "Erreur lors du calcul du plus court chemin" << endl;
+	}
+}
+
 void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 
 	cout << "commande : ";
@@ -152,52 +184,67 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 	{
 		cout << "\n" << layerGraph << endl;
 	}
-	else if (command == "fichier")
-	{
-		//NOT IMPLEMENTED YET
-	}
 	else if (command == "plus court chemin")
 	{
-		vector<State*> path = vector<State*>();
-		int totalCost = layerGraph.findShortestPathWithLimits(path);
-		cout << "Les noeuds parcourus sont : ";
-		for (size_t i = 0; i < path.size(); i++)
-		{
-			cout << path[i]->getId() << "-";
-		}
-		cout << "\nCout total : " << totalCost << endl;
-		cout << "Le mot construit est : ";
-		for (size_t i = 0; i < path.size() - 1; i++)
-		{
-			int arrivalId = path[i + 1]->getId();
-			vector<Edge> transitions = path[i]->getTransitions();
-			vector<Edge>::iterator itTransition = find_if(transitions.begin(), transitions.end(), [arrivalId](const Edge& transition) {return transition.getArrivalState()->getId() == arrivalId;});
-			cout << itTransition->getTransition() << " ";
-		}
-		cout << endl;
-
+		vector<State> path = layerGraph.findShortestPathWithLimits();
+		printShortestPath(path);
 	}
 	else if (command == "plus court chemin sans contraintes") {
-		cout << "Les noeuds parcourus sont : ";
 		vector<State> path = layerGraph.findShortestPath();
-		for (size_t i = path.size() - 2; i > 0; i--)
-		{
-			cout << path[i].getId() << "-";
-		}
-		cout << "\nCout total : " << path.front().getNodeState()->getCost() << endl;
-		cout << "Le mot construit est : ";
-		for (size_t i = path.size() - 2; i > 0; i--)
-		{
-			int arrivalId = path[i - 1].getId();
-			vector<Edge> previousStateTransitions = path[i].getTransitions();
-			vector<Edge>::iterator itTransition = find_if(previousStateTransitions.begin(), previousStateTransitions.end(), [arrivalId](const Edge& transition) {return transition.getArrivalState()->getId() == arrivalId;});
-			cout << itTransition->getTransition() << " ";
-		}
-		cout << endl;
+		printShortestPath(path);
 	}
-	else if (strncmp(command.c_str(), "recherche", strlen("recherche")) == 0)
+	else if (command == "recherche")
 	{
-		//NOT IMPLEMENTED YET
+		string input;
+		cout << "Entrez le premier noeud de l'arete recherchee." << endl;
+		getline(cin, input);
+		int idNode1 = stoi(input);
+
+		cout << "Entrez son niveau dans le graphe en couche" << endl;
+		getline(cin, input);
+		int layer1 = stoi(input);
+
+		State* state1 = layerGraph.getState(idNode1, layer1);
+		cout << "Entrez le deuxieme noeud de l'arete recherchee." << endl;
+		getline(cin, input);
+		int idNode2 = stoi(input);
+
+		cout << "Entrez son niveau dans le graphe en couche" << endl;
+		getline(cin, input);
+		int layer2 = stoi(input);
+
+		State* state2 = layerGraph.getState(idNode2, layer2);
+		Edge* edge = layerGraph.getEdge(state1, state2);
+
+		if (edge == nullptr) {
+			cout << "Il n'existe pas de transition directe entre ces deux noeuds" << endl;
+		}
+		else {
+			cout << "Entrez le cout maximum souhaitée entre les deux noeuds (Laissez vide pour un nombre illimité)." << endl;
+			getline(cin, input);
+			if (input != "") {
+				int cost;
+				cost = stoi(input);
+				vector<State> path = layerGraph.getEdgeOnValidPathWithCost(edge, cost);
+				if (path.empty()) {
+					cout << "Erreur: il n'existe aucun chemin entre ces deux noeuds avec un cout de " << cost << endl;
+				}
+				else {
+					cout << "Un chemin a été trouvé." << endl;
+					printShortestPath(path);
+				}
+			}
+			else {
+				vector<State> path = layerGraph.getEdgeOnValidPath(edge);
+				if (path.empty()) {
+					cout << "Erreur: il n'existe aucun chemin entre ces deux noeuds" << endl;
+				}
+				else {
+					cout << "Un chemin a été trouvé." << endl;
+					printShortestPath(path);
+				}
+			}
+		}
 	}
 	else if (command == "quitter")
 	{

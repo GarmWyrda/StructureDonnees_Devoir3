@@ -76,22 +76,6 @@ State & AFDGraph::getStartState()
 	return this->states[statePos];
 }
 
-State & AFDGraph::getState(const State & state)
-{
-	/*
-	vector<State>::iterator it;
-	for (it = this->states.begin(); it != this->states.end(); ++it) {
-		if (it->getId() == state.getId()) {
-			break;
-		}
-	}
-	throw NotFoundException();
-	*/
-	int idToFind = state.getId();
-	int statePos = find_if(this->states.begin(), this->states.end(), [idToFind](const State& findState) {return findState.getId() == idToFind; }) - this->states.begin();
-	return this->states[statePos];
-}
-
 const vector<State>& AFDGraph::getStates() const
 {
 	return this->states;

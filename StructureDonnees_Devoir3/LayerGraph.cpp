@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "LayerGraph.h"
 #include <algorithm>
-#include <iostream>
+#include "Path.h"
 using namespace std;
 
 LayerGraph::LayerGraph(AFDGraph graph, int wordLength, vector<int> minValues, vector<int> maxValues)
@@ -60,7 +60,6 @@ LayerGraph::LayerGraph(AFDGraph graph, int wordLength, vector<int> minValues, ve
 	}
 
 }
-
 LayerGraph::~LayerGraph()
 {
 }
@@ -70,55 +69,46 @@ State LayerGraph::getSource() const
 	return this->source;
 }
 
+
+bool _compareCosts(State* xState, State* yState)
+{
+	return xState->getNodeState().getCost() > yState->getNodeState().getCost();
+}
+
 vector<State> LayerGraph::findShortestPath()
 {
+	_resetNodesState(&source);
 
-	return _dijkstra(source, destination);
-}
-bool _compareCosts(State const* xState, State const *yState)
-{
-	return xState->getNodeState()->getCost() > yState->getNodeState()->getCost();
-}
-
-
-vector<State> LayerGraph::_dijkstra(State startState, State goalState)
-{
+	//Dijkstra
 	//Propagate states
 	vector<State*> heap = vector<State*>();
 	int trialCost = 0;
 
-	for (vector<State> layer : layers)
-	{
-		for (State state : layer)
-		{
-			state.setNodeState(nullptr);
-		}
-	}
 
-	startState.setNodeState(new NodeState(false, nullptr, 0));
+	source.getNodeState().setValues(false, nullptr, 0);
 
-	State* currentState = new State(startState);
+	State* currentState = &source;
 	do {
-		currentState->getNodeState()->setClosed(true);
+		currentState->getNodeState().setClosed(true);
 		for (Edge transition : currentState->getTransitions())
 		{
-			trialCost = currentState->getNodeState()->getCost() + transition.getWeight();
+			trialCost = currentState->getNodeState().getCost() + transition.getWeight();
 			State* arrivalState = transition.getArrivalState();
-			if (arrivalState->getNodeState() == nullptr)
+			if (!arrivalState->getNodeState().exists())
 			{
 
-				arrivalState->setNodeState(new NodeState(false, currentState, trialCost));
+				arrivalState->getNodeState().setValues(false, currentState, trialCost);
 				heap.push_back(arrivalState);
 				sort(heap.begin(), heap.end(), &_compareCosts);
 			}
 			else
 			{
-				if (!arrivalState->getNodeState()->isClosed() && trialCost < arrivalState->getNodeState()->getCost())
+				if (!arrivalState->getNodeState().isClosed() && trialCost < arrivalState->getNodeState().getCost())
 				{
 					int i = find(heap.begin(), heap.end(), arrivalState) - heap.begin();
-					heap[i]->getNodeState()->setCost(trialCost);
-					arrivalState->getNodeState()->setPredecessor(currentState);
-					arrivalState->getNodeState()->setCost(trialCost);
+					heap[i]->getNodeState().setCost(trialCost);
+					arrivalState->getNodeState().setPredecessor(currentState);
+					arrivalState->getNodeState().setCost(trialCost);
 				}
 			}
 		}
@@ -126,17 +116,17 @@ vector<State> LayerGraph::_dijkstra(State startState, State goalState)
 		currentState = heap.back();
 		heap.pop_back();
 
-	} while (currentState->getId() != goalState.getId());
+	} while (currentState->getId() != destination.getId());
 
 	//Build optimal path
-	if (currentState->getId() == goalState.getId())
+	if (currentState->getId() == destination.getId())
 	{
 		vector<State> path = vector<State>();
 		State* predecessor = currentState;
 		while (predecessor != nullptr)
 		{
 			path.push_back(*predecessor);
-			predecessor = predecessor->getNodeState()->getPredecessor();
+			predecessor = predecessor->getNodeState().getPredecessor();
 		}
 		return path;
 	}
@@ -146,7 +136,354 @@ vector<State> LayerGraph::_dijkstra(State startState, State goalState)
 	}
 }
 
-int LayerGraph::findShortestPathWithLimits(vector<State*> &returnPath)
+
+bool LayerGraph::_isValidPath(Path path)
+{
+	State* lastState = path.getPath()[0];
+	if (lastState->getId() == destination.getId())
+	{
+		for (size_t i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] < minValues[i] || path.getLettersCount()[i] > maxValues[i]) {
+				return false;
+			}
+		}
+		return true;
+	} else
+	{
+		for (size_t i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] > maxValues[i]) {
+				return false;
+			}
+		}
+
+		int missingTransitions = 0;
+		for (size_t i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] < minValues[i]) {
+				missingTransitions += minValues[i] - path.getLettersCount()[i];
+			}
+		}
+
+		if (missingTransitions > layers.size() - path.getPath().size() + 1) {
+			return false;
+		}
+
+		bool isValid = false;
+		for (Edge transition : lastState->getTransitions()) {
+			Path nextPath = Path(path);
+			nextPath.addFrontState(transition.getArrivalState());
+			if (_isValidPath(nextPath)) {
+				isValid = true;
+				break;
+			}
+		}
+		return isValid;
+	}
+
+}
+
+vector<State> LayerGraph::_findShortestPathWithLimitsAndGoal(State* goalState)
+{
+	//Propagate states
+	vector<State*> heap = vector<State*>();
+	int trialCost = 0;
+
+	source.getNodeState().setValues(false, nullptr, 0);
+
+	State* currentState = &source;
+	heap.push_back(&source);
+
+	while (!heap.empty() && currentState != goalState)
+	{
+		currentState = heap.back();
+		heap.pop_back();
+
+		currentState->getNodeState().setClosed(true);
+		for (Edge transition : currentState->getTransitions())
+		{
+			trialCost = currentState->getNodeState().getCost() + transition.getWeight();
+			State* arrivalState = transition.getArrivalState();
+			if (!arrivalState->getNodeState().exists())
+			{
+				Path path = Path(maxValues.size());
+				path.addState(arrivalState);
+				State* copyState = currentState;
+				while (copyState->getId() != source.getId())
+				{
+					path.addState(copyState);
+					copyState = copyState->getNodeState().getPredecessor();
+				}
+				path.addState(&source);
+				if (_isValidPath(path))
+				{
+					arrivalState->getNodeState().setValues(false, currentState, trialCost);
+					heap.push_back(arrivalState);
+					sort(heap.begin(), heap.end(), &_compareCosts);
+				}
+
+			}
+			else
+			{
+				if (!arrivalState->getNodeState().isClosed() && trialCost < arrivalState->getNodeState().getCost())
+				{
+					int i = find(heap.begin(), heap.end(), arrivalState) - heap.begin();
+					heap[i]->getNodeState().setCost(trialCost);
+					arrivalState->getNodeState().setPredecessor(currentState);
+					arrivalState->getNodeState().setCost(trialCost);
+				}
+			}
+		}
+
+
+	}
+
+	//Build optimal path
+	if (currentState->getId() == goalState->getId())
+	{
+		vector<State> path = vector<State>();
+		State* predecessor = currentState;
+		while (predecessor != nullptr)
+		{
+			path.push_back(*predecessor);
+			predecessor = predecessor->getNodeState().getPredecessor();
+		}
+		return path;
+	}
+	else
+	{
+		return vector<State>();
+	}
+}
+
+vector<State> LayerGraph::findShortestPathWithLimits()
+{
+	_resetNodesState(&source);
+
+	//Propagate states
+	vector<State*> heap = vector<State*>();
+	int trialCost = 0;
+
+	source.getNodeState().setValues(false, nullptr, 0);
+
+	State* currentState = nullptr;
+	heap.push_back(&source);
+
+	while (!heap.empty() && (currentState == nullptr || currentState->getId() != destination.getId()))
+	{
+		currentState = heap.back();
+		heap.pop_back();
+
+		currentState->getNodeState().setClosed(true);
+		for (Edge& transition : currentState->getTransitions())
+		{
+			trialCost = currentState->getNodeState().getCost() + transition.getWeight();
+			State* arrivalState = transition.getArrivalState();
+			if (!arrivalState->getNodeState().exists())
+			{
+				Path path = Path(maxValues.size());
+				path.addState(arrivalState);
+				State* copyState = currentState;
+				while (copyState->getId() != source.getId())
+				{
+					path.addState(copyState);
+					copyState = copyState->getNodeState().getPredecessor();
+				}
+				path.addState(&source);
+				if (_isValidPath(path))
+				{
+					transition.getArrivalState()->getNodeState().setValues(false, currentState, trialCost);
+					heap.push_back(arrivalState);
+					sort(heap.begin(), heap.end(), &_compareCosts);
+				}
+
+			}
+			else
+			{
+				if (!arrivalState->getNodeState().isClosed() && trialCost < arrivalState->getNodeState().getCost())
+				{
+					int i = find(heap.begin(), heap.end(), arrivalState) - heap.begin();
+					heap[i]->getNodeState().setCost(trialCost);
+					arrivalState->getNodeState().setPredecessor(currentState);
+					arrivalState->getNodeState().setCost(trialCost);
+				}
+			}
+		}
+
+
+	}
+
+	//Build optimal path
+	if (currentState->getId() == destination.getId())
+	{
+		vector<State> path = vector<State>();
+		State* predecessor = currentState;
+		while (predecessor != nullptr)
+		{
+			path.push_back(*predecessor);
+			predecessor = predecessor->getNodeState().getPredecessor();
+		}
+		return path;
+	}
+	else
+	{
+		return vector<State>();
+	}
+}
+
+vector<State> LayerGraph::getEdgeOnValidPath(Edge* edge)
+{
+	_resetNodesState(&source);
+
+	vector<State> tempPath = _findShortestPathWithLimitsAndGoal(edge->getArrivalState());
+
+	//find first valid path with cost
+
+	Path path = Path(maxValues.size());
+	for (State& state : tempPath)
+	{
+		path.addState(&state);
+	}
+
+	Path path2 = _getFirstValidPath(path);
+	tempPath = path2.toVector();
+	return tempPath;
+}
+
+vector<State> LayerGraph::getEdgeOnValidPathWithCost(Edge* edge, int cost)
+{
+	_resetNodesState(&source);
+	vector<State> tempPath = _findShortestPathWithLimitsAndGoal(edge->getArrivalState());
+
+	//find first valid path with cost
+
+	Path path = Path(maxValues.size());
+	for (State& state : tempPath)
+	{
+		path.addState(&state);
+	}
+
+	path = _getFirstValidPath(path, cost);
+	vector<State> returnVector = vector<State>();
+	for (State* state : path.getPath())
+	{
+		returnVector.push_back(*state);
+	}
+	return returnVector;
+
+}
+
+Path LayerGraph::_getFirstValidPath(Path path)
+{
+	State* lastState = path.getPath()[0];
+	if (lastState->getId() == destination.getId())
+	{
+		for (size_t i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] < minValues[i] || path.getLettersCount()[i] > maxValues[i]) {
+				return Path(maxValues.size());
+			}
+		}
+		return path;
+	}
+	else {
+
+		for (int i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] > maxValues[i]) {
+				return Path(maxValues.size());
+			}
+		}
+
+		int nbMissingEdges = 0;
+		for (int i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] < minValues[i]) {
+				nbMissingEdges += minValues[i] - path.getLettersCount()[i];
+			}
+		}
+		if (nbMissingEdges > layers.size() - path.getPath().size() + 1) {
+			return Path(maxValues.size());
+		}
+
+		for (Edge edge : lastState->getTransitions()) {
+			Path nextPath = Path(path);
+			nextPath.addFrontState(edge.getArrivalState());
+			Path result = _getFirstValidPath(nextPath);
+			if (result.getPath().size() > 0) {
+				return path;
+			}
+
+		}
+		return Path(maxValues.size());
+	}
+}
+
+Path LayerGraph::_getFirstValidPath(Path path, int cost)
+{
+	State* lastState = path.getPath()[0];
+	if (lastState->getId() == destination.getId())
+	{
+		for (size_t i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] < minValues[i] || path.getLettersCount()[i] > maxValues[i]) {
+				return Path(maxValues.size());
+			}
+		}
+		return path;
+	}
+	else {
+
+		for (int i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] > maxValues[i]) {
+				return Path(maxValues.size());
+			}
+		}
+
+		int nbMissingEdges = 0;
+		for (int i = 0; i < path.getLettersCount().size(); i++) {
+			if (path.getLettersCount()[i] < minValues[i]) {
+				nbMissingEdges += minValues[i] - path.getLettersCount()[i];
+			}
+		}
+		if (nbMissingEdges > layers.size() - path.getPath().size() + 1) {
+			return Path(maxValues.size());
+		}
+
+		for (Edge edge : lastState->getTransitions()) {
+			Path nextPath = Path(path);
+			nextPath.addFrontState(edge.getArrivalState());
+			if (nextPath.getCost() <= cost) {
+				Path result = _getFirstValidPath(nextPath, cost);
+				if (result.getPath().size() > 0) {
+					return path;
+				}
+			}
+		}
+		return Path(maxValues.size());
+	}
+}
+
+Edge* LayerGraph::getEdge(State* state1, State* state2)
+{
+	for (Edge& edge : state1->getTransitions()) {
+		if (edge.getArrivalState()->getId() == state2->getId()) {
+			return &edge;
+		}
+	}
+	return nullptr;
+}
+
+State* LayerGraph::getState(int nodeId, int layer)
+{
+	if (nodeId == -1)
+		return &source;
+	else if (nodeId == -2)
+		return &destination;
+	else {
+		for (State& state : layers[layer]) {
+			if (nodeId == state.getId()) {
+				return &state;
+			}
+		}
+	}
+}
+
+int LayerGraph::findShortestPathWithLimitsOld(vector<State*> &returnPath)
 {
 
 	vector<int> lettersCount = vector<int>();
@@ -184,6 +521,8 @@ int LayerGraph::findShortestPathWithLimits(vector<State*> &returnPath)
 	}
 	returnPath = paths[shorttestPathIndex];
 	return shortestCost;
+
+
 }
 
 void LayerGraph::_buildPaths(State* currenState, vector<vector<State*>>& paths, vector<State*> currentPath, vector<int> lettersCount)
@@ -219,6 +558,19 @@ void LayerGraph::_buildPaths(State* currenState, vector<vector<State*>>& paths, 
 
 		}
 	}
+
+}
+
+void LayerGraph::_resetNodesState(State* currentState)
+{
+	currentState->getNodeState().reset();
+	for (Edge& transition : currentState->getTransitions()) {
+		if(transition.getArrivalState()->getNodeState().exists())
+		{
+			_resetNodesState(transition.getArrivalState());
+		}
+	}
+
 
 }
 

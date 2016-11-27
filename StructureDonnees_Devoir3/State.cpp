@@ -3,6 +3,7 @@
 
 State::State()
 {
+	this->nodeSate = NodeState();
 }
 
 State::State(int id, bool isfinal, vector<Edge> transitions)
@@ -10,6 +11,7 @@ State::State(int id, bool isfinal, vector<Edge> transitions)
 	this->isfinal = isfinal;
 	this->id = id;
 	this->transitions = transitions;
+	this->nodeSate = NodeState();
 }
 
 State::State(int id, bool isfinal)
@@ -17,12 +19,13 @@ State::State(int id, bool isfinal)
 	this->id = id;
 	this->isfinal = isfinal;
 	this->transitions = vector<Edge>();
+	this->nodeSate = NodeState();
 }
 
 
 State::~State()
 {
-	if (nodeSate != nullptr) delete[] nodeSate;
+	//if (nodeSate != nullptr) delete[] nodeSate;
 }
 
 int State::getId() const
@@ -46,13 +49,12 @@ size_t State::getNbTransitions() const
 	return this->transitions.size();
 }
 
-vector<Edge> State::getTransitions() const
+vector<Edge>& State::getTransitions()
 {
 	return this->transitions;
 }
 
-
-Edge State::getEdge(int i)
+Edge& State::getEdge(int i)
 {
 	return this->transitions[i];
 }
@@ -62,12 +64,7 @@ void State::addTransition(Edge newEdge)
 	this->transitions.push_back(newEdge);
 }
 
-void State::setNodeState(NodeState* nodeState)
-{
-	this->nodeSate = nodeState;
-}
-
-NodeState* State::getNodeState() const
+NodeState& State::getNodeState()
 {
 	return this->nodeSate;
 }
@@ -78,7 +75,7 @@ void State::addTransition(State* outState, string transition, int weight)
 	this->transitions.push_back(newEdge);
 }
 
-ostream & operator<<(std::ostream & stream, const State state)
+ostream & operator<<(std::ostream & stream, State state)
 {
 	stream << state.getId() << "---> ";
 	stream << " ( ";

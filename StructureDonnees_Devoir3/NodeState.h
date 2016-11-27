@@ -1,24 +1,25 @@
 ﻿#pragma once
-#include <memory>
-using namespace std;
 
 class State;
 class NodeState
 {
 private:
-	bool closed = false;
-	State* predecessor = nullptr;
-	int cost = 0;
+	bool initialized;
+	bool closed;
+	State* predecessor;
+	int cost;
 public:
-
-	explicit NodeState(bool closed = false, State* predecessor = nullptr, int cost = 0);
-	NodeState(const NodeState& copy);
+	NodeState();
+	NodeState(bool closed, State * predecessor, int cost);
 	virtual ~NodeState();
 
 	bool isClosed() const;
-	State* getPredecessor() const;
+	void reset();
+	bool exists() const;
+	State* getPredecessor();
 	int getCost() const;
 
+	void setValues(bool closed, State * predecessor, int cost);
 	void setClosed(bool closed);
 	void setPredecessor(State* predecessor);
 	void setCost(int cost);

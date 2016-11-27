@@ -17,7 +17,6 @@ public:
 	void addState(State state, bool start);
 	State &getState(int index);
 	State &getStartState();
-	State &getState(const State &state);
 	const vector<State> &getStates() const;
 	friend std::ostream& operator<< (std::ostream&, const AFDGraph);
 

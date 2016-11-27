@@ -2,7 +2,7 @@
 #include <vector>
 #include "Edge.h"
 #include "NodeState.h"
-using std::vector;
+using namespace std;
 
 
 class State
@@ -11,7 +11,7 @@ private :
 	int id;
 	bool isfinal;
 	vector<Edge> transitions;
-	NodeState* nodeSate = nullptr;
+	NodeState nodeSate;
 
 public:
 	State();
@@ -22,12 +22,11 @@ public:
 	bool getFinal() const;
 	void setFinal(bool newFinal);
 	size_t getNbTransitions() const;
-	vector<Edge> getTransitions() const;
-	Edge getEdge(int i);
+	vector<Edge>& getTransitions();
+	Edge& getEdge(int i);
 	void addTransition(Edge newEdge);
 	void addTransition(State* outState, string transition, int weight);
-	void setNodeState(NodeState* nodeState);
-	NodeState* getNodeState() const;
+	NodeState& getNodeState();
 
 	friend ostream& operator<< (ostream&, const State);
 };
