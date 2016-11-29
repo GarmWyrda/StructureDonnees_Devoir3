@@ -397,6 +397,7 @@ Path LayerGraph::_getFirstValidPath(Path path)
 				nbMissingEdges += minValues[i] - path.getLettersCount()[i];
 			}
 		}
+
 		if (nbMissingEdges > layers.size() - path.getPath().size() + 1) {
 			return Path(maxValues.size());
 		}
@@ -404,9 +405,9 @@ Path LayerGraph::_getFirstValidPath(Path path)
 		for (Edge edge : lastState->getTransitions()) {
 			Path nextPath = Path(path);
 			nextPath.addFrontState(edge.getArrivalState());
-			Path result = _getFirstValidPath(nextPath);
-			if (result.getPath().size() > 0) {
-				return path;
+			Path returnPath = _getFirstValidPath(nextPath);
+			if (returnPath.getPath().size() > 0) {
+				return returnPath;
 			}
 
 		}
@@ -440,6 +441,7 @@ Path LayerGraph::_getFirstValidPath(Path path, int cost)
 				nbMissingEdges += minValues[i] - path.getLettersCount()[i];
 			}
 		}
+
 		if (nbMissingEdges > layers.size() - path.getPath().size() + 1) {
 			return Path(maxValues.size());
 		}
@@ -448,9 +450,9 @@ Path LayerGraph::_getFirstValidPath(Path path, int cost)
 			Path nextPath = Path(path);
 			nextPath.addFrontState(edge.getArrivalState());
 			if (nextPath.getCost() <= cost) {
-				Path result = _getFirstValidPath(nextPath, cost);
-				if (result.getPath().size() > 0) {
-					return path;
+				Path returnPath = _getFirstValidPath(nextPath, cost);
+				if (returnPath.getPath().size() > 0) {
+					return returnPath;
 				}
 			}
 		}

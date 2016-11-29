@@ -145,7 +145,12 @@ void printShortestPath(vector<State> path)
 				cout << path[i].getId() << "-";
 			}
 		}
-		cout << "\nCout total : " << path.front().getNodeState().getCost() << endl;
+		
+		if(path.front().getNodeState().getCost() != 0)
+		{
+			cout << "\nCout total : " << path.front().getNodeState().getCost() << endl;
+		}
+		
 		cout << "Le mot construit est : ";
 		for (size_t i = path.size() - 1; i > 0; i--)
 		{
@@ -220,7 +225,7 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 			cout << "Il n'existe pas de transition directe entre ces deux noeuds" << endl;
 		}
 		else {
-			cout << "Entrez le cout maximum souhaitée entre les deux noeuds (Laissez vide pour un nombre illimité)." << endl;
+			cout << "Entrez le cout maximum souhaitee entre les deux noeuds (Laissez vide pour un nombre illimite)." << endl;
 			getline(cin, input);
 			if (input != "") {
 				int cost;
@@ -230,7 +235,7 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 					cout << "Erreur: il n'existe aucun chemin entre ces deux noeuds avec un cout de " << cost << endl;
 				}
 				else {
-					cout << "Un chemin a été trouvé." << endl;
+					cout << "Un chemin a ete trouve." << endl;
 					printShortestPath(path);
 				}
 			}
@@ -240,7 +245,7 @@ void readCommand(AFDGraph graph, LayerGraph layerGraph) {
 					cout << "Erreur: il n'existe aucun chemin entre ces deux noeuds" << endl;
 				}
 				else {
-					cout << "Un chemin a été trouvé." << endl;
+					cout << "Un chemin a ete trouve." << endl;
 					printShortestPath(path);
 				}
 			}
